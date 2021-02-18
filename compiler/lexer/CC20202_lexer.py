@@ -3,7 +3,7 @@
 import ply.lex as lex
 from loguru import logger
 
-from compiler.exeptions import InvalidTokenError
+from compiler.exceptions import InvalidTokenError
 
 
 class CC20202Lexer:

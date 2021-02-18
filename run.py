@@ -4,7 +4,7 @@ import argparse
 from loguru import logger
 
 from compiler.lexer.CC20202_lexer import lexer
-from compiler.exeptions import InvalidTokenError
+from compiler.exceptions import InvalidTokenError
 
 
 def main(filepath: str):
