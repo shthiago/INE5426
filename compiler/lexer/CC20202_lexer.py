@@ -135,8 +135,7 @@ class CC20202Lexer:
     # Error handling rule
 
     def t_error(self, t):
-        logger.error("Illegal character '%s'" % t.value[0])
-        raise InvalidTokenError('Invalid token!')
+        raise InvalidTokenError("Illegal character '%s'" % t.value[0])
 
     def build(self, **kwargs):
         self.lexer = lex.lex(module=self, **kwargs)

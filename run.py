@@ -19,7 +19,8 @@ def main(filepath: str):
     while True:
         try:
             token = lexer.token()
-        except InvalidTokenError:
+        except InvalidTokenError as exp:
+            logger.error(exp)
             exit(1)
 
         if not token:
