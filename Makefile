@@ -1,0 +1,31 @@
+
+SHELL := /bin/bash
+
+# Colors
+GREEN=\033[0;32m
+RED=\033[0;31m
+NC=\033[0m
+
+filepath=examples/exemplo1.ccc
+
+help:
+	@echo Available commands:
+	@req:		Generate requirements.txt from pyproject.toml, for delivering
+
+
+req:
+	@echo -e "${GREEN} Generating requirements.txt... ${NC}"
+	@poetry export -f requirements.txt > requirements.txt
+
+setup:
+	@echo -e "${RED} Remove existing virtualenv... ${NC}"
+	@rm -rf venv/
+	@echo -e "${GREEN} Creating new virtualenv...${NC}\n"
+	@virtualenv venv/
+	@source venv/bin/activate && pip install -r requirements.txt
+	@echo -e "${GREEN} Virtualenv created! ${NC}"
+
+run:
+	@echo -e "${GREEN} Executing... ${NC}"
+	@./venv/bin/python run.py ${filepath}
+
