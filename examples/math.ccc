@@ -1,0 +1,122 @@
+def gcd(int a, int b) {
+    int orig_a;
+    orig_a = a;
+    int iteration;
+    for(iteration = 0; a != b; iteration = iteration + 1) {
+        if (a > b) {
+            a = a - b;
+        } else {
+            b = b - a;
+        }
+    }
+    print "O GCD de";
+    print orig_a;
+    print " e ";
+    print b;
+    print "é:"
+    print a;
+
+    return;
+}
+
+def is_prime(int n) {
+    if(n <= 3){
+        if (n > 1) {
+            print "É primo";
+        } else {
+            print "Não é primo.\n";
+        }
+        return;
+    }
+
+    if (n % 2 == 0) {
+        print "Não é primo.\n";
+        return;
+    }
+
+     if (n % 3 == 0) {
+        print "Não é primo.\n";
+        return;
+     }
+
+    int i;
+    for (i = 5; n >= (i * i); i = i + 6){
+        if ((n % i) == 0) {
+            print "Não é primo\n";
+            return;
+        }
+        int tmp;
+        tmp = i + 2
+        if ((n % tmp) == 0) {
+            print "Não é primo\n";
+            return;
+        }
+    }
+
+    print "É primo\n";
+    return;
+}
+
+def pow(int n, int e) {
+    int output;
+    output = 1;
+    int i;
+    for (i = 0; i < e; i = i + 1) {
+        output = output * n;
+    }
+
+    print "Resultado é ";
+    print output;
+    print "\n";
+
+    return;
+}
+
+def factorial(int n) {
+	if (n < 0) {
+		print "Resultado é: -1 por definição\n";
+		return;
+	}
+	
+	if (n <= 1) {
+		print "Resultado é: 1\n";
+		return;
+	}
+	
+	int result;
+	int prev_fact;
+	int prev_n;
+	
+	prev_n = n - 1;
+	prev_fact = factorial(prev_n);
+	result = n * prev_fact;
+	
+	print "Resultado é: ";
+    print result;
+    print "\n";
+	
+	return;
+}
+
+def main() {
+    print "Se 11 é primo:";
+    is_prime(6);
+
+    print "Se 12 é primo:";
+    is_prime(12);
+
+    print "5 elevado a 2:";
+    pow(5, 2);
+
+    print "5 elevado a 5";
+    pow(5, 5);
+
+    print "GCD de 30 e 27";
+    gcd(30, 27);
+
+    print "GCD de 97 e 32";
+    gcd(97, 32);
+
+    print "Fatorial de 12:";
+    factorial(12);
+}
