@@ -18,7 +18,9 @@ req:
 	@poetry export -f requirements.txt > requirements.txt
 
 setup:
-	@echo -e "${RED} Remove existing virtualenv... ${NC}"
+	@echo Installing virtualenv using pip3
+	@pip3 install virtualenv --user
+	@echo -e "${RED} Removing previous existing virtualenv (if exists)... ${NC}"
 	@rm -rf venv/
 	@echo -e "${GREEN} Creating new virtualenv...${NC}\n"
 	@virtualenv venv/

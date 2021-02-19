@@ -6,7 +6,7 @@ authors = ["Thiago Sant Helena <thiago.sant.helena@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.6.9"
 ply = "^3.11"
 pylint = "^2.6.2"
 mypy = "^0.800"
