@@ -1,6 +1,5 @@
 """Main script file"""
 import argparse
-from pprint import pprint
 
 from loguru import logger
 
@@ -14,7 +13,7 @@ def main(filepath: str):
         source_code = f.read()
 
     token_count = 0
-    symbol_table = {}
+    symbol_table = []
     lexer.input(source_code)
     while True:
         try:
@@ -26,14 +25,13 @@ def main(filepath: str):
         if not token:
             break
         else:
-            if token.type not in symbol_table:
-                symbol_table[token.type] = [token.value]
-            else:
-                symbol_table[token.type].append(token.value)
+            symbol_table.append(token)
             token_count += 1
 
     logger.info('Total tokens: %s' % token_count)
-    pprint(symbol_table)
+    print("{:<25} {:<5} {}".format('Token', 'Line', 'Value'))
+    for token in symbol_table:
+        print("{:<25} {:<5} {}".format(token.type, token.lineno, token.value))
 
 
 if __name__ == '__main__':
