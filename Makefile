@@ -31,3 +31,7 @@ run:
 	@echo -e "${GREEN} Executing... ${NC}"
 	@./venv/bin/python run.py ${filepath}
 
+poetry-run:
+	@echo -e "${GREEN} Executing... ${NC}"
+	@poetry run python run.py ${filepath}
+
