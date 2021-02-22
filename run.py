@@ -35,7 +35,7 @@ def main(filepath: str):
               'Linha',
               'Column',
               'Tipo',
-              'Valor']
+              'Lexema']
     row_print = "{:<15} " * len(header)
     print(row_print.format(*header))
     for row in symbols_table:
