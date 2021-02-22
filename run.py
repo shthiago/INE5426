@@ -33,7 +33,7 @@ def main(filepath: str):
     # Print table
     header = ['Indice',
               'Linha',
-              'Column',
+              'Coluna',
               'Tipo',
               'Lexema']
     row_print = "{:<15} " * len(header)
