@@ -5,6 +5,7 @@ from loguru import logger
 
 from compiler.lexer.CC20202_lexer import lexer
 from compiler.exceptions import InvalidTokenError
+from compiler.symbol_table import generate_symbol_table
 
 
 def main(filepath: str):
@@ -12,8 +13,7 @@ def main(filepath: str):
     with open(filepath) as f:
         source_code = f.read()
 
-    token_count = 0
-    symbol_table = []
+    tokens = []
     lexer.input(source_code)
     while True:
         try:
@@ -25,13 +25,27 @@ def main(filepath: str):
         if not token:
             break
         else:
-            symbol_table.append(token)
-            token_count += 1
+            tokens.append(token)
 
-    logger.info('Total tokens: %s' % token_count)
-    print("{:<25} {:<5} {}".format('Token', 'Line', 'Value'))
-    for token in symbol_table:
-        print("{:<25} {:<5} {}".format(token.type, token.lineno, token.value))
+    logger.info('Total tokens: %s' % len(tokens))
+    symbols_table = generate_symbol_table(tokens)
+
+    # Print table
+    header = ['Indice',
+              'Linha',
+              'Column',
+              'Tipo',
+              'Valor']
+    row_print = "{:<15} " * len(header)
+    print(row_print.format(*header))
+    for row in symbols_table:
+        print(row_print.format(
+            row.token_position,
+            row.lineno,
+            row.col,
+            row.type,
+            row.value)
+        )
 
 
 if __name__ == '__main__':
