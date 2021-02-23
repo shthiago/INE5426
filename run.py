@@ -28,12 +28,16 @@ def main(filepath: str):
             tokens.append(token)
 
     logger.info('Total tokens: %s' % len(tokens))
+    logger.info('Lista de tokens:')
+    for token in tokens:
+        print('<%s, %s>' % (token.type, token.value))
+
     symbols_table = generate_symbol_table(tokens)
+    logger.info('Imprimindo tabela de símbolos...')
 
     # Print table
     header = ['Indice',
               'Linha',
-              'Coluna',
               'Tipo',
               'Lexema']
     row_print = "{:<15} " * len(header)
@@ -42,7 +46,6 @@ def main(filepath: str):
         print(row_print.format(
             row.token_position,
             row.lineno,
-            row.col,
             row.type,
             row.value)
         )

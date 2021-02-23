@@ -20,7 +20,6 @@ class SymbolRow:
     """
     token_position: int
     lineno: int
-    col: int
     type: str
     value: Union[int, float, str]
 
@@ -33,7 +32,6 @@ def generate_symbol_table(tokens: List[LexToken]) -> List[SymbolRow]:
             symbols_table.append(SymbolRow(
                 token_position=i,
                 lineno=token.lineno,
-                col=token.lexpos,
                 type=token.type,
                 value=token.value
             ))
