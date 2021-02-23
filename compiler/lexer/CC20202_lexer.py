@@ -134,14 +134,20 @@ class CC20202Lexer:
 
     # Error handling rule
 
+    def find_column(self, token):
+        line_start = self._input.rfind('\n', 0, token.lexpos) + 1
+        return (token.lexpos - line_start) + 1
+
     def t_error(self, t):
-        raise InvalidTokenError("Illegal character '%s' at line %s" %
-                                (t.value[0], t.lexer.lineno))
+        raise InvalidTokenError(
+            "Illegal character '%s' at line %s, column %s" %
+            (t.value[0], t.lexer.lineno, self.find_column(t)))
 
     def build(self, **kwargs):
         self.lexer = lex.lex(module=self, **kwargs)
 
     def input(self, source_code: str, **kwargs):
+        self._input = source_code
         self.lexer.input(source_code, **kwargs)
 
     def token(self):
