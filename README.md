@@ -2,7 +2,7 @@
 
 # Usage requirements
 
-You need to have [`virtualenv`](https://pypi.org/project/virtualenv/) installed, using `pip` compatible with `python=^3.6.9`.
+You need to have `pip3` installed, compatible with `python=^3.6.9`.
 
 # Setup
 
