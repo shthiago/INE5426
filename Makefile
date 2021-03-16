@@ -23,7 +23,7 @@ setup:
 	@echo -e "${RED} Removing previous existing virtualenv (if exists)... ${NC}"
 	@rm -rf venv/
 	@echo -e "${GREEN} Creating new virtualenv...${NC}\n"
-	@virtualenv venv/
+	@python3 -m venv venv/
 	@source venv/bin/activate && pip install -r requirements.txt
 	@echo -e "${GREEN} Virtualenv created! ${NC}"
 
