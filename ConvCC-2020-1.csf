@@ -1,5 +1,5 @@
-PROGRAM: "(" STATEMENT ")"
-       | "(" FUNCLIST ")"
+PROGRAM: STATEMENT
+       | FUNCLIST
        | &
 
 FUNCLIST: FUNCDEF FUNCLIST
@@ -18,11 +18,10 @@ DATATYPE: "int"
 STATEMENT: VARDECL ";"
          | ATRIBSTAT ";"
          | PRINTSTAT ";"
-         | PRINTSTAT ";"
          | READSTAT ";"
          | RETURNSTAT ";"
-         | IFSTAT ";"
-         | FORSTAT ";"
+         | IFSTAT
+         | FORSTAT
          | "{" STATELIST "}"
          | "break" ";"
          | ";"
@@ -64,7 +63,7 @@ OPT_STATELIST: STATELIST
 
 ALLOCEXPRESSION: "new" DATATYPE "[" NUMEXPRESSION "]" OPT_ALLOC_NUMEXP
 
-OPT_ALLOC_NUMEXP: "[" NUMEXPRESSION "]"
+OPT_ALLOC_NUMEXP: "[" NUMEXPRESSION "]" OPT_ALLOC_NUMEXP
                 | &
 
 EXPRESSION: NUMEXPRESSION OPT_REL_OP_NUM_EXPR
