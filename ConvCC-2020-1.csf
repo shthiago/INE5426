@@ -7,7 +7,7 @@ FUNCLIST: FUNCDEF FUNCLIST
 
 FUNCDEF: "def" "ident" "(" PARAMLIST ")" "{" STATELIST "}"
 
-PARAMLIST: DATATYPE "ident", PARAMLIST
+PARAMLIST: DATATYPE "ident" "," PARAMLIST
          | DATATYPE "ident"
          | &
 
@@ -39,7 +39,7 @@ ATRIB_RIGHT: EXPRESSION
 
 FUNCCALL: "ident" "(" PARAMLISTCALL ")"
 
-PARAMLISTCALL: "ident", PARAMLISTCALL
+PARAMLISTCALL: "ident" "," PARAMLISTCALL
              | "ident"
              | &
 
