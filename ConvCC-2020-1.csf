@@ -2,14 +2,19 @@ PROGRAM: STATEMENT
        | FUNCLIST
        | &
 
-FUNCLIST: FUNCDEF FUNCLIST
-        | FUNCDEF
+
+FUNCLIST: FUNCDEF FUNCLISTAUX
+
+FUNCLISTAUX: FUNCLIST
+           | &
 
 FUNCDEF: "def" "ident" "(" PARAMLIST ")" "{" STATELIST "}"
 
-PARAMLIST: DATATYPE "ident" "," PARAMLIST
-         | DATATYPE "ident"
+PARAMLIST: DATATYPE "ident" PARAMLISTAUX
          | &
+
+PARAMLISTAUX: "," PARAMLIST
+            | &
 
 DATATYPE: "int"
         | "float"
@@ -39,9 +44,11 @@ ATRIB_RIGHT: EXPRESSION
 
 FUNCCALL: "ident" "(" PARAMLISTCALL ")"
 
-PARAMLISTCALL: "ident" "," PARAMLISTCALL
-             | "ident"
+PARAMLISTCALL: "ident" PARAMLISTCALLAUX
              | &
+
+PARAMLISTCALLAUX: "," PARAMLISTCALL
+                | &
 
 PRINTSTAT: "print" EXPRESSION
 
