@@ -89,7 +89,7 @@ class CfgParser():
 
 def union(first: Set[str], begins: Set[str]):
     n = len(first)
-    first |= begins
+    first |= begins - {'&'}
     return len(first) != n
 
 
@@ -109,12 +109,13 @@ class CfgProccessor:
         follow[self.__empty_symbol] = {self.__stack_base_symbol}
         follow[self.cfg.start_symbol] = {self.__stack_base_symbol}
 
-        epsilon = set()
+        epsilon = {self.__empty_symbol}
 
         while True:
             updated = False
 
             for prod in self.cfg.productions:
+                # Calculate FIRST
                 for symbol in prod.body:
                     updated |= union(first[prod.head], first[symbol])
 
@@ -122,8 +123,10 @@ class CfgProccessor:
                         break
 
                 else:
+                    first[prod.head] |= {self.__empty_symbol}
                     updated |= union(epsilon, {prod.head})
 
+                # Calcualte FOLLOW
                 aux = follow[prod.head]
                 for symbol in reversed(prod.body):
                     if symbol in follow:
@@ -173,16 +176,5 @@ class CfgProccessor:
 
 
 if __name__ == '__main__':
-    # test pseudo-suite
-    filepath = 'ConvCC-2020-1.csf'
-
-    cfg_proc = CfgProccessor()
-    cfg_proc.read(filepath)
-
-    cfg_proc.follow('FORSTAT')
-
-    for symbol in cfg_proc.cfg.terminals.union(cfg_proc.cfg.non_terminals):
-        print(f'FIRST({symbol})= {cfg_proc.first(symbol)}')
-
-    for symbol in cfg_proc.cfg.non_terminals:
-        print(f'FOLLOW({symbol})= {cfg_proc.follow(symbol)}')
+    proc = CfgProccessor()
+    proc.read('tests/example.csf')
