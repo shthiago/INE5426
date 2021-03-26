@@ -1,6 +1,9 @@
 """Check if grammar is LL(1)"""
+from itertools import combinations
 from dataclasses import dataclass
 from typing import List, Union, Set, Tuple
+
+from loguru import logger
 
 
 @dataclass
@@ -93,7 +96,7 @@ def union(first: Set[str], begins: Set[str]):
     return len(first) != n
 
 
-class CfgProccessor:
+class CfgProcessor:
     def __init__(self):
         self.__empty_symbol = '&'
         self.__stack_base_symbol = '$'
@@ -174,7 +177,93 @@ class CfgProccessor:
     def follow(self, symbol: str) -> Set[str]:
         return self.__follow[symbol]
 
+    def first_of_prod_body(self, body: List[str]) -> Set[str]:
+        first = set()
+        for symbol in body:
+            symbol_first = self.first(symbol)
+
+            first |= self.first(symbol) - {self.__empty_symbol}
+
+            if self.__empty_symbol not in symbol_first:
+                break
+
+        else:
+            first |= {self.__empty_symbol}
+
+        return first
+
+    def __theorem_first_clause(self, prod1: Production,
+                               prod2: Production) -> bool:
+        """First(alpha) intersect First(beta) = {}"""
+        prod1_first = self.first_of_prod_body(prod1.body)
+        prod2_first = self.first_of_prod_body(prod2.body)
+
+        valid = prod1_first.intersection(prod2_first) == set()
+
+        if not valid:
+            logger.info('First theorem failed')
+
+        return valid
+
+    def __theorem_second_clause(self, prod1: Production,
+                                prod2: Production) -> bool:
+        """
+            If beta ->* &, First(alpha) intersect Follow(A) = {}
+            If alpha ->* &, First(beta) intersect Follow(A) = {}
+
+            prod.body ->* & == First(prod.body) contains empty_symbol
+        """
+        if prod1.head != prod2.head:
+            logger.error('Theorem do not apply to different heads: %s, %s' %
+                         (prod1, prod2))
+            raise ValueError
+
+        valid = True
+        head_follow = self.follow(prod1.head)
+        prod1_body_first = self.first_of_prod_body(prod1.body)
+        prod2_body_first = self.first_of_prod_body(prod2.body)
+
+        if self.__empty_symbol in prod2_body_first:
+            valid &= prod1_body_first.intersection(head_follow) == set()
+
+        if self.__empty_symbol in prod1_body_first:
+            valid &= prod2_body_first.intersection(head_follow) == set()
+
+        if not valid:
+            logger.info('First theorem failed')
+
+        return valid
+
+    def __apply_theorem_all_prods_of(self, nt: str) -> bool:
+        """Apply theorem for all prods of a non terminal"""
+        prods = self.get_productions_of(nt)
+        for p1, p2 in combinations(prods, 2):
+            first_clause = self.__theorem_first_clause(p1, p2)
+            second_clause = self.__theorem_second_clause(p1, p2)
+            if not (first_clause and second_clause):
+                logger.error('Grammar is not LL(1) due to: %s, %s' %
+                             (p1, p2))
+                return False
+
+        return True
+
+    def is_ll1(self) -> bool:
+        """Check if cfg is LL(1) apply the theorem
+
+            for A -> "alpha" | "beta",
+
+            1 - First(alpha) intersect First(beta) = {}
+            2 - If beta ->* &, First(alpha) intersect Follow(A) = {}
+                If alpha ->* &, First(beta) intersect Follow(A) = {}
+        """
+        for nt in self.cfg.non_terminals:
+            if not self.__apply_theorem_all_prods_of(nt):
+                return False
+
+        return True
+
 
 if __name__ == '__main__':
-    proc = CfgProccessor()
-    proc.read('tests/example.csf')
+    cfg_proc = CfgProcessor()
+    cfg_proc.read('ConvCC-2020-1.csf')
+    cfg_proc.is_ll1()
