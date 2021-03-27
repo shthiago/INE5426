@@ -1,6 +1,6 @@
 import pytest
 
-from utils.check_ll1 import CfgProcessor
+from utils.cfg_processor import CfgProcessor
 
 
 @pytest.fixture
