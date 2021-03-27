@@ -1,115 +1,103 @@
-PROGRAM: STATEMENT
-       | FUNCLIST
-       | &
-
-
-FUNCLIST: FUNCDEF FUNCLISTAUX
-
-FUNCLISTAUX: FUNCLIST
-           | &
-
-FUNCDEF: "def" "ident" "(" PARAMLIST ")" "{" STATELIST "}"
-
-PARAMLIST: DATATYPE "ident" PARAMLISTAUX
-         | &
-
-PARAMLISTAUX: "," PARAMLIST
-            | &
-
-DATATYPE: "int"
-        | "float"
-        | "string"
-
-STATEMENT: VARDECL ";"
-         | ATRIBSTAT ";"
-         | PRINTSTAT ";"
-         | READSTAT ";"
-         | RETURNSTAT ";"
-         | IFSTAT
-         | FORSTAT
-         | "{" STATELIST "}"
-         | "break" ";"
-         | ";"
-
-VARDECL: DATATYPE "ident" OPT_VECTOR
-
-OPT_VECTOR: "[" "int_constant" "]" OPT_VECTOR
-          | &
-
-ATRIBSTAT: LVALUE "=" ATRIB_RIGHT
-
-ATRIB_RIGHT: EXPRESSION
-           | ALLOCEXPRESSION
-           | FUNCCALL
-
-FUNCCALL: "ident" "(" PARAMLISTCALL ")"
-
-PARAMLISTCALL: "ident" PARAMLISTCALLAUX
-             | &
-
-PARAMLISTCALLAUX: "," PARAMLISTCALL
-                | &
-
-PRINTSTAT: "print" EXPRESSION
-
-READSTAT: "read" LVALUE
-
-RETURNSTAT: "return"
-
-IFSTAT: "if" "(" EXPRESSION ")" STATEMENT OPT_ELSE
-
-OPT_ELSE: "(" STATEMENT ")"
-        | &
-
-FORSTAT: "for" "(" ATRIBSTAT ";" EXPRESSION ";" ATRIBSTAT ")" STATEMENT
-
-STATELIST: STATEMENT OPT_STATELIST
-
-OPT_STATELIST: STATELIST
-             | &
-
-ALLOCEXPRESSION: "new" DATATYPE "[" NUMEXPRESSION "]" OPT_ALLOC_NUMEXP
-
-OPT_ALLOC_NUMEXP: "[" NUMEXPRESSION "]" OPT_ALLOC_NUMEXP
-                | &
-
-EXPRESSION: NUMEXPRESSION OPT_REL_OP_NUM_EXPR
-
-OPT_REL_OP_NUM_EXPR: REL_OP NUMEXPRESSION
-                   | &
-                   
-REL_OP: "<"
-      | ">"
-      | "<="
-      | ">="
-      | "=="
-      | "!="
-
-NUMEXPRESSION: TERM REC_PLUS_MINUS_TERM
-
-REC_PLUS_MINUS_TERM: PLUS_OR_MINUS TERM REC_PLUS_MINUS_TERM
-                   | &
-
-PLUS_OR_MINUS: "+"
-             | "-"
-
-TERM: UNARYEXPR  REC_UNARYEXPR
-
-REC_UNARYEXPR: UNARYEXPR_OP REC_UNARYEXPR
-             | &
-
-UNARYEXPR_OP: "∗"
-            | "/"
-            | "%"
-
-UNARYEXPR: PLUS_OR_MINUS FACTOR
-         | FACTOR
-
-FACTOR: "int_constant"
-      | "float_constant"
-      | "string_constant"
-      | "null"
-      | LVALUE
-      | "(" NUMEXPRESSION ")"
-
-LVALUE: "ident" OPT_ALLOC_NUMEXP
+             PROGRAM : STATEMENT
+                     | FUNCLIST
+                     | &
+            FUNCLIST : FUNCDEF FUNCLISTAUX
+         FUNCLISTAUX : FUNCDEF FUNCLISTAUX
+                     | &
+             FUNCDEF : "def" "ident" "(" PARAMLIST ")" "{" STATELIST "}"
+           PARAMLIST : DATATYPE "ident" PARAMLISTAUX
+                     | &
+        PARAMLISTAUX : "," PARAMLIST
+                     | &
+            DATATYPE : "int"
+                     | "float"
+                     | "string"
+           STATEMENT : VARDECL ";"
+                     | ATRIBSTAT ";"
+                     | PRINTSTAT ";"
+                     | READSTAT ";"
+                     | RETURNSTAT ";"
+                     | IFSTAT
+                     | FORSTAT
+                     | "{" STATELIST "}"
+                     | "break" ";"
+                     | ";"
+             VARDECL : "int" "ident" OPT_VECTOR
+                     | "float" "ident" OPT_VECTOR
+                     | "string" "ident" OPT_VECTOR
+          OPT_VECTOR : "[" "int_constant" "]" OPT_VECTOR
+                     | &
+           ATRIBSTAT : LVALUE "=" ATRIB_RIGHT
+         ATRIB_RIGHT : EXPRESSION
+                     | ALLOCEXPRESSION
+                     | FUNCCALL
+            FUNCCALL : "ident" "(" PARAMLISTCALL ")"
+       PARAMLISTCALL : "ident" PARAMLISTCALLAUX
+                     | &
+    PARAMLISTCALLAUX : "," PARAMLISTCALL
+                     | &
+           PRINTSTAT : "print" EXPRESSION
+            READSTAT : "read" LVALUE
+          RETURNSTAT : "return"
+              IFSTAT : "if" "(" EXPRESSION ")" STATEMENT OPT_ELSE
+            OPT_ELSE : "else" STATEMENT
+                     | &
+             FORSTAT : "for" "(" ATRIBSTAT ";" EXPRESSION ";" ATRIBSTAT ")" STATEMENT
+           STATELIST : "int" "ident" OPT_VECTOR ";" OPT_STATELIST
+                     | "float" "ident" OPT_VECTOR ";" OPT_STATELIST
+                     | "string" "ident" OPT_VECTOR ";" OPT_STATELIST
+                     | LVALUE "=" ATRIB_RIGHT ";" OPT_STATELIST
+                     | "print" EXPRESSION ";" OPT_STATELIST
+                     | "read" LVALUE ";" OPT_STATELIST
+                     | "return" ";" OPT_STATELIST
+                     | "if" "(" EXPRESSION ")" STATEMENT OPT_ELSE OPT_STATELIST
+                     | "for" "(" ATRIBSTAT ";" EXPRESSION ";" ATRIBSTAT ")" STATEMENT OPT_STATELIST
+                     | "{" STATELIST "}" OPT_STATELIST
+                     | "break" ";" OPT_STATELIST
+                     | ";" OPT_STATELIST
+       OPT_STATELIST : "int" "ident" OPT_VECTOR ";" OPT_STATELIST
+                     | "float" "ident" OPT_VECTOR ";" OPT_STATELIST
+                     | "string" "ident" OPT_VECTOR ";" OPT_STATELIST
+                     | LVALUE "=" ATRIB_RIGHT ";" OPT_STATELIST
+                     | "print" EXPRESSION ";" OPT_STATELIST
+                     | "read" LVALUE ";" OPT_STATELIST
+                     | "return" ";" OPT_STATELIST
+                     | "if" "(" EXPRESSION ")" STATEMENT OPT_ELSE OPT_STATELIST
+                     | "for" "(" ATRIBSTAT ";" EXPRESSION ";" ATRIBSTAT ")" STATEMENT OPT_STATELIST
+                     | "{" STATELIST "}" OPT_STATELIST
+                     | "break" ";" OPT_STATELIST
+                     | ";" OPT_STATELIST
+                     | &
+     ALLOCEXPRESSION : "new" DATATYPE "[" NUMEXPRESSION "]" OPT_ALLOC_NUMEXP
+    OPT_ALLOC_NUMEXP : "[" NUMEXPRESSION "]" OPT_ALLOC_NUMEXP
+                     | &
+          EXPRESSION : NUMEXPRESSION OPT_REL_OP_NUM_EXPR
+ OPT_REL_OP_NUM_EXPR : REL_OP NUMEXPRESSION
+                     | &
+              REL_OP : "<"
+                     | ">"
+                     | "<="
+                     | ">="
+                     | "=="
+                     | "!="
+       NUMEXPRESSION : TERM REC_PLUS_MINUS_TERM
+ REC_PLUS_MINUS_TERM : PLUS_OR_MINUS TERM REC_PLUS_MINUS_TERM
+                     | &
+       PLUS_OR_MINUS : "+"
+                     | "-"
+                TERM : UNARYEXPR REC_UNARYEXPR
+       REC_UNARYEXPR : UNARYEXPR_OP REC_UNARYEXPR
+                     | &
+        UNARYEXPR_OP : "∗"
+                     | "/"
+                     | "%"
+           UNARYEXPR : "+" FACTOR
+                     | "-" FACTOR
+                     | FACTOR
+              FACTOR : "int_constant"
+                     | "float_constant"
+                     | "string_constant"
+                     | "null"
+                     | LVALUE
+                     | "(" NUMEXPRESSION ")"
+              LVALUE : "ident" OPT_ALLOC_NUMEXP

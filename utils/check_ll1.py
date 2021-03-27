@@ -201,6 +201,8 @@ class CfgProcessor:
         valid = prod1_first.intersection(prod2_first) == set()
 
         if not valid:
+            logger.info('Prod1 first:: %s ' % prod1_first)
+            logger.info('Prod2 first:: %s ' % prod2_first)
             logger.info('First theorem failed')
 
         return valid
@@ -230,7 +232,10 @@ class CfgProcessor:
             valid &= prod2_body_first.intersection(head_follow) == set()
 
         if not valid:
-            logger.info('First theorem failed')
+            logger.info('Second theorem failed')
+            logger.info('Prod1 first: %s' % prod1_body_first)
+            logger.info('Prod2 first: %s' % prod2_body_first)
+            logger.info('Head follow: %s' % head_follow)
 
         return valid
 
