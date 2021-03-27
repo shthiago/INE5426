@@ -40,6 +40,8 @@ class SyntaticAnalyserMatrix:
                 self.__matrix[row][col] = None
 
     def set_prod(self, non_terminal: str, terminal: str, prod: Production):
+        if self.__matrix[non_terminal][terminal] is not None:
+            raise ValueError('Table cell cannot be set twice!')
         self.__matrix[non_terminal][terminal] = prod
 
     def get_prod(self, non_terminal: str, terminal: str
