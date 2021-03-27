@@ -5,8 +5,8 @@ from typing import List, Union, Set, Tuple, Dict
 
 from loguru import logger
 
-from .data_structures import Cfg, Production, SyntaticAnalyserMatrix
-from .cfg_parser import CfgParser
+from data_structures import Cfg, Production, SyntaticAnalyserMatrix
+from cfg_parser import CfgParser
 
 
 def union(first: Set[str], begins: Set[str]):
@@ -186,8 +186,47 @@ class CfgProcessor:
 
         return True
 
+    def generate_matrix(self) -> SyntaticAnalyserMatrix:
+        """Generate the analyser matrix, if the grammar is LL(1)"""
+        if not self.is_ll1():
+            logger.error('Cannot generate matrix for non LL(1) grammar')
+
+        mat = SyntaticAnalyserMatrix(
+            self.cfg.terminals, self.cfg.non_terminals)
+        for prod in self.cfg.productions:
+            body_first = self.first_of_prod_body(prod.body)
+            for terminal in body_first - {self.__empty_symbol}:
+                mat.set_prod(prod.head, terminal, prod)
+
+            if self.__empty_symbol in body_first:
+                for terminal in self.follow(prod.head):
+                    mat.set_prod(prod.head, terminal, prod)
+
+        return mat
+
 
 if __name__ == '__main__':
     cfg_proc = CfgProcessor()
     cfg_proc.read('ConvCC-2020-1.csf')
-    cfg_proc.is_ll1()
+    mat = cfg_proc.generate_matrix()
+
+    productions_max_len = max([len(str(prod))
+                               for prod in cfg_proc.cfg.productions]) + 2
+
+    header = ' ' * productions_max_len + '|' + \
+        '|'.join([k.center(productions_max_len)
+                  for k in cfg_proc.cfg.terminals | {'$'}]) + '|'
+
+    rows = []
+    for non_terminal in cfg_proc.cfg.non_terminals:
+        row = non_terminal.center(productions_max_len) + '|'
+        for terminal in cfg_proc.cfg.terminals | {'$'}:
+            row += str(mat.get_prod(non_terminal, terminal)
+                       ).center(productions_max_len) + '|'
+
+        rows.append(row)
+
+    with open('table.txt', 'w') as f:
+        f.write(header + '\n')
+        for row in rows:
+            f.write(row + '\n')
