@@ -47,3 +47,23 @@ class SyntaticAnalyserMatrix:
     def get_prod(self, non_terminal: str, terminal: str
                  ) -> Optional[Production]:
         return self.__matrix[non_terminal][terminal]
+
+
+@dataclass
+class SymbolRow:
+    """Data structure for a row in symbols table
+
+    var_name (str): Variable name
+    token_index (int): Index of token at tokens list
+    type (str): Variable type
+    line_declared (int): token first appearance
+    lines_referenced (List[int]): lines where the token is referenced
+    """
+    var_name: str
+    token_index: int
+    type: str
+    line_declared: int
+    lines_referenced: List[int]
+
+
+SymbolTableType = Dict[str, SymbolRow]

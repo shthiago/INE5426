@@ -4,36 +4,29 @@ from dataclasses import dataclass
 
 from ply.lex import LexToken
 
-
-SYMBOLS_TO_TABLE = ['IDENT', 'FLOAT_CONSTANT',
-                    'INT_CONSTANT', 'STRING_CONSTANT']
+from utils.data_structures import SymbolRow, SymbolTableType
 
 
-@dataclass
-class SymbolRow:
-    """Data structure for a row in symbols table
-
-    token_position (int): Position of the token into all tokens list
-    lineno (int): Line of the token into source code
-    col (int): Column of the token into source code
-    type (str): Type of the token, from the final symbols of the gramatic
-    """
-    token_position: int
-    lineno: int
-    type: str
-    value: Union[int, float, str]
+SYMBOLS_TO_TABLE = ['IDENT']
 
 
-def generate_symbol_table(tokens: List[LexToken]) -> List[SymbolRow]:
+def generate_symbol_table(tokens: List[LexToken],
+                          default_type: str = 'Unknow') -> SymbolTableType:
     """Gerante symbol table using SYMBOLS_TO_TABLE as orientation"""
-    symbols_table: List[SymbolRow] = []
-    for i, token in enumerate(tokens, 1):
+    symbols_table: SymbolTableType = {}
+    for i, token in enumerate(tokens):
         if token.type in SYMBOLS_TO_TABLE:
-            symbols_table.append(SymbolRow(
-                token_position=i,
-                lineno=token.lineno,
-                type=token.type,
-                value=token.value
-            ))
+            if token.value in symbols_table:
+                symbols_table[token.value].lines_referenced.append(
+                    token.lineno)
+
+            else:
+                symbols_table[token.value] = SymbolRow(
+                    var_name=token.value,
+                    token_index=i,
+                    type=default_type,
+                    line_declared=token.lineno,
+                    lines_referenced=[]
+                )
 
     return symbols_table

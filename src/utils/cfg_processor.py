@@ -203,30 +203,3 @@ class CfgProcessor:
                     mat.set_prod(prod.head, terminal, prod)
 
         return mat
-
-
-if __name__ == '__main__':
-    cfg_proc = CfgProcessor()
-    cfg_proc.read('ConvCC-2020-1.csf')
-    mat = cfg_proc.generate_matrix()
-
-    productions_max_len = max([len(str(prod))
-                               for prod in cfg_proc.cfg.productions]) + 2
-
-    header = ' ' * productions_max_len + '|' + \
-        '|'.join([k.center(productions_max_len)
-                  for k in cfg_proc.cfg.terminals | {'$'}]) + '|'
-
-    rows = []
-    for non_terminal in cfg_proc.cfg.non_terminals:
-        row = non_terminal.center(productions_max_len) + '|'
-        for terminal in cfg_proc.cfg.terminals | {'$'}:
-            row += str(mat.get_prod(non_terminal, terminal)
-                       ).center(productions_max_len) + '|'
-
-        rows.append(row)
-
-    with open('table.txt', 'w') as f:
-        f.write(header + '\n')
-        for row in rows:
-            f.write(row + '\n')

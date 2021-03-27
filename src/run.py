@@ -1,5 +1,6 @@
 """Main script file"""
 import argparse
+from dataclasses import asdict
 
 from loguru import logger
 
@@ -36,19 +37,22 @@ def main(filepath: str):
     logger.info('Imprimindo tabela de símbolos...')
 
     # Print table
-    header = ['Indice',
-              'Linha',
-              'Tipo',
-              'Lexema']
+    header = [
+        'var_name',
+        'token_index',
+        'type',
+        'line_declared',
+        'lines_referenced']
+
     row_print = "{:<15} " * len(header)
     print(row_print.format(*header))
-    for row in symbols_table:
+    for _, symbol_row in symbols_table.items():
         print(row_print.format(
-            row.token_position,
-            row.lineno,
-            row.type,
-            row.value)
-        )
+            str(symbol_row.var_name),
+            str(symbol_row.token_index),
+            str(symbol_row.type),
+            str(symbol_row.line_declared),
+            str(symbol_row.lines_referenced)))
 
 
 if __name__ == '__main__':
