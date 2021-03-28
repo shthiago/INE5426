@@ -73,3 +73,4 @@ if __name__ == '__main__':
 
     args = arg_parser.parse_args()
     main(args.filepath)
+    # main('examples/exemplo1.ccc')
