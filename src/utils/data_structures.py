@@ -14,6 +14,11 @@ class Production:
     def __repr__(self):
         return f'{self.head} -> ' + ' '.join(self.body)
 
+    def __eq__(self, other):
+        head_eq = self.head == other.head
+        body_eq = self.body == other.body
+        return head_eq and body_eq
+
 
 @dataclass
 class Cfg:
@@ -32,7 +37,7 @@ class SyntaticAnalyserMatrix:
         cols = terminals | {stack_base}
         rows = non_terminals
 
-        self.__matrix: Dict[Dict[str, Optional[Production]]] = {}
+        self.__matrix: Dict[str, Dict[str, Optional[Production]]] = {}
 
         for row in rows:
             self.__matrix[row] = {}
@@ -40,13 +45,18 @@ class SyntaticAnalyserMatrix:
                 self.__matrix[row][col] = None
 
     def set_prod(self, non_terminal: str, terminal: str, prod: Production):
-        if self.__matrix[non_terminal][terminal] is not None:
+        curr_element = self.__matrix[non_terminal][terminal]
+        if curr_element is not None \
+                and curr_element != prod:
             raise ValueError('Table cell cannot be set twice!')
         self.__matrix[non_terminal][terminal] = prod
 
     def get_prod(self, non_terminal: str, terminal: str
                  ) -> Optional[Production]:
         return self.__matrix[non_terminal][terminal]
+
+    def get_matrix(self) -> Dict[str, Dict[str, Optional[Production]]]:
+        return self.__matrix
 
 
 @dataclass

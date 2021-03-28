@@ -5,8 +5,8 @@ from typing import List, Union, Set, Tuple, Dict
 
 from loguru import logger
 
-from data_structures import Cfg, Production, SyntaticAnalyserMatrix
-from cfg_parser import CfgParser
+from utils.data_structures import Cfg, Production, SyntaticAnalyserMatrix
+from utils.cfg_parser import CfgParser
 
 
 def union(first: Set[str], begins: Set[str]):
@@ -137,7 +137,7 @@ class CfgProcessor:
         if prod1.head != prod2.head:
             logger.error('Theorem do not apply to different heads: %s, %s' %
                          (prod1, prod2))
-            raise ValueError
+            exit(1)
 
         valid = True
         head_follow = self.follow(prod1.head)
@@ -190,6 +190,7 @@ class CfgProcessor:
         """Generate the analyser matrix, if the grammar is LL(1)"""
         if not self.is_ll1():
             logger.error('Cannot generate matrix for non LL(1) grammar')
+            raise ValueError
 
         mat = SyntaticAnalyserMatrix(
             self.cfg.terminals, self.cfg.non_terminals)

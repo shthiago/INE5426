@@ -1,6 +1,6 @@
 from typing import Set, Union, List
 
-from data_structures import Cfg, Production
+from utils.data_structures import Cfg, Production
 
 
 class CfgParser():
@@ -32,6 +32,9 @@ class CfgParser():
         """Parse a single line"""
         if self.__is_first_production_line(line):
             head, body = self.__split_head_body(line)
+            head = head.strip()
+            body = body.strip()
+
             self.__current_symbol = head
 
             if self.__start_symbol is None:
@@ -52,6 +55,7 @@ class CfgParser():
         body: List[str] = []
         self.__non_terminals.add(head)
         for item in str_body.split():
+            item = item.strip()
             if item == '':
                 continue
 

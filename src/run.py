@@ -5,8 +5,9 @@ from dataclasses import asdict
 from loguru import logger
 
 from compiler.lexer.CC20202_lexer import lexer
-from compiler.exceptions import InvalidTokenError
+from compiler.exceptions import InvalidTokenError, SyntaticError
 from compiler.symbol_table import generate_symbol_table
+from compiler.parser.CC20202_parser import parser
 
 
 def main(filepath: str):
@@ -29,9 +30,9 @@ def main(filepath: str):
             tokens.append(token)
 
     logger.info('Total tokens: %s' % len(tokens))
-    logger.info('Lista de tokens:')
-    for token in tokens:
-        print('<%s, %s>' % (token.type, token.value))
+    # logger.info('Lista de tokens:')
+    # for token in tokens:
+    #     print('<%s, %s>' % (token.type, token.value))
 
     symbols_table = generate_symbol_table(tokens)
     logger.info('Imprimindo tabela de símbolos...')
@@ -54,12 +55,21 @@ def main(filepath: str):
             str(symbol_row.line_declared),
             str(symbol_row.lines_referenced)))
 
+    logger.info('Running parser for list of tokens...')
+    try:
+        parser.parse(symbols_table=symbols_table,
+                     tokens=tokens)
+
+    except SyntaticError as exp:
+        logger.warning(exp)
+        logger.error(f'Syntatic error detected!')
+
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
+    arg_parser = argparse.ArgumentParser(
         description='Auxiliar script to execute compiler')
-    parser.add_argument('filepath',
-                        help='Target source code file')
+    arg_parser.add_argument('filepath',
+                            help='Target source code file')
 
-    args = parser.parse_args()
+    args = arg_parser.parse_args()
     main(args.filepath)
