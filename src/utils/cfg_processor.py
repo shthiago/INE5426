@@ -194,6 +194,7 @@ class CfgProcessor:
 
         mat = SyntaticAnalyserMatrix(
             self.cfg.terminals, self.cfg.non_terminals)
+
         for prod in self.cfg.productions:
             body_first = self.first_of_prod_body(prod.body)
             for terminal in body_first - {self.__empty_symbol}:

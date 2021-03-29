@@ -13,7 +13,7 @@ def gcd(int a, int b) {
     print orig_a;
     print " e ";
     print b;
-    print "é:"
+    print "é:";
     print a;
 
     return;

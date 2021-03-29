@@ -17,9 +17,9 @@ class CC20202Lexer:
         'float': 'FLOAT_KEYWORD',
         'string': 'STRING_KEYWORD',
         'break': 'BREAK',
-        'read': 'READ_AT',
-        'print': 'PRINT_AT',
-        'return': 'RETURN_ST_AT',
+        'read': 'READSTAT',
+        'print': 'PRINTSTAT',
+        'return': 'RETURNSTAT',
     }
 
     tokens = [

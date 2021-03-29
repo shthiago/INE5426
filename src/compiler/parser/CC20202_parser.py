@@ -20,9 +20,9 @@ TYPE_TO_TERMINAL_MAP = {
     'FLOAT_KEYWORD': 'float',
     'STRING_KEYWORD': 'string',
     'BREAK': 'break',
-    'READ_AT': 'read',
-    'PRINT_AT': 'print',
-    'RETURN_ST_AT': 'return',
+    'READSTAT': 'read',
+    'PRINTSTAT': 'print',
+    'RETURNSTAT': 'return',
     'LBRACKETS': '{',
     'RBRACKETS': '}',
     'LPAREN': '(',
@@ -48,7 +48,11 @@ TYPE_TO_TERMINAL_MAP = {
     'FLOAT_CONSTANT': 'float_constant',
     'INT_CONSTANT': 'int_constant',
     'STRING_CONSTAT': 'string_constant',
+    'STACK_BOT': '$'
 }
+
+STACK_BOT_TOKEN = LexToken()
+STACK_BOT_TOKEN.type = 'STACK_BOT'
 
 
 class CC20202Parser:
@@ -76,7 +80,7 @@ class CC20202Parser:
         stack.append('$')
         stack.append(self.start_symbol)
 
-        for token in tokens:
+        for token in tokens + [STACK_BOT_TOKEN]:
             token_terminal = TYPE_TO_TERMINAL_MAP[token.type]
             while True:
                 # Terminal on top of stack and on code pointer
@@ -103,7 +107,9 @@ class CC20202Parser:
                     if symbol != self.__empty_symbol:
                         stack.append(symbol)
 
-        if len(stack) > 0:
+        # If something other than the stack bottom is in the stack
+        if len(stack) > 1:
+            print(stack)
             return (False, token)
 
         return (True, None)

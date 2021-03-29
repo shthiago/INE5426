@@ -105,10 +105,10 @@ PLUS_OR_MINUS : "+"
                
 TERM : UNARYEXPR REC_UNARYEXPR
       
-REC_UNARYEXPR : UNARYEXPR_OP REC_UNARYEXPR
+REC_UNARYEXPR : UNARYEXPR_OP TERM
               | &
        
-UNARYEXPR_OP : "∗"
+UNARYEXPR_OP : "*"
              | "/"
              | "%"
           
