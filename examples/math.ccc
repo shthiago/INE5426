@@ -46,7 +46,7 @@ def is_prime(int n) {
             return;
         }
         int tmp;
-        tmp = i + 2
+        tmp = i + 2;
         if ((n % tmp) == 0) {
             print "Não é primo\n";
             return;
@@ -99,24 +99,39 @@ def factorial(int n) {
 }
 
 def main() {
+    int aux_a;
+    int aux_b;
+    int return_value;
+
     print "Se 11 é primo:";
-    is_prime(6);
+    aux_a = 6;
+    return_value = is_prime(aux_a);
 
+    aux_a = 12;
     print "Se 12 é primo:";
-    is_prime(12);
+    return_value = is_prime(aux_a);
 
+    aux_a = 5;
+    aux_b = 2; 
     print "5 elevado a 2:";
-    pow(5, 2);
+    return_value = pow(aux_a, aux_b);
 
+    aux_a = 5;
+    aux_b = 5; 
     print "5 elevado a 5";
-    pow(5, 5);
+    return_value = pow(aux_a, aux_b);
 
+    aux_a = 30;
+    aux_b = 27; 
     print "GCD de 30 e 27";
-    gcd(30, 27);
+    return_value = gcd(aux_a, aux_b);
 
+    aux_a = 97;
+    aux_b = 32; 
     print "GCD de 97 e 32";
-    gcd(97, 32);
+    return_value = gcd(aux_a, aux_b);
 
+    aux_a = 12;
     print "Fatorial de 12:";
-    factorial(12);
+    return_value = factorial(aux_a);
 }

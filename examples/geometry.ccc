@@ -83,25 +83,37 @@ def calc_square_area(int side) {
 
     int area;
     area = side * side;
-    print "Área do quadrado:\n"
+    print "Área do quadrado:\n";
 	print area;
     print "\n";
     return;
 }
 
 def main() {
+    int aux_a;
+    int aux_b;
+    int aux_c;
+
     print "Área do triângulo de base 10 e altura 5:\n";
-    triangle_area(10, 5);
+    aux_a = 10;
+    aux_b = 5;
+    aux_a = triangle_area(aux_a, aux_b);
 
+    aux_a = 10;
+    aux_b = 5;
+    aux_c = 6;
     print "Segmentos dos tamanhos 3, 6 e 9 podem formar um triângulo?\n";
-    form_triangle(3, 6, 9);
+    aux_a = form_triangle(aux_a, aux_b, aux_c);
 
+    float radius;
     print "Qual é a circunferência do círculo de raio 3?\n";
-    calc_circle_circumference(3.0);
+    radius = 3.0;
+    aux_a = calc_circle_circumference(radius);
 
     print "Qual é a área do círculo de raio 3?\n";
-    calc_circle_area(3.0);
+    aux_a = calc_circle_area(radius);
 
+    radius = 6.0;
     print "Qual é a área do quadrado de lado 6?\n";
-    calc_square_area(6);
+    aux_a = calc_square_area(radius);
 }
