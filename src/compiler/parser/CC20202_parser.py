@@ -1,6 +1,6 @@
 """Parser for CC-2020-2 language"""
 import os
-from typing import List
+from typing import List, Tuple, Optional
 from collections import deque
 
 from ply.lex import LexToken
@@ -69,7 +69,7 @@ class CC20202Parser:
         self.__empty_symbol = '&'
 
     def parse(self, symbols_table: SymbolTableType,
-              tokens: List[LexToken]):
+              tokens: List[LexToken]) -> Tuple[bool, Optional[LexToken]]:
         """Validate symbols and update symbols_table"""
         stack = deque()
 
@@ -86,12 +86,14 @@ class CC20202Parser:
                     break
 
                 # Get production to be applied
-                prod = self.mat.get_prod(stack[-1], token_terminal)
+                try:
+                    prod = self.mat.get_prod(stack[-1], token_terminal)
+                except KeyError:
+                    return (False, token)
 
                 # Reconize syntatic error
                 if prod is None:
-                    raise SyntaticError(
-                        f'Invalid combination: {stack[-1]}, {token}')
+                    return (False, token)
 
                 # Remove the top of the stack
                 stack.pop()
@@ -102,7 +104,9 @@ class CC20202Parser:
                         stack.append(symbol)
 
         if len(stack) > 0:
-            raise SyntaticError(f'{stack}')
+            return (False, token)
+
+        return (True, None)
 
 
 parser = CC20202Parser()

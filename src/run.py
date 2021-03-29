@@ -1,5 +1,6 @@
 """Main script file"""
 import argparse
+import linecache
 from dataclasses import asdict
 
 from loguru import logger
@@ -56,13 +57,15 @@ def main(filepath: str):
             str(symbol_row.lines_referenced)))
 
     logger.info('Running parser for list of tokens...')
-    try:
-        parser.parse(symbols_table=symbols_table,
-                     tokens=tokens)
+    success, fail_token = parser.parse(symbols_table=symbols_table,
+                                       tokens=tokens)
 
-    except SyntaticError as exp:
-        logger.warning(exp)
-        logger.error(f'Syntatic error detected!')
+    if not success:
+        line = linecache.getline(filepath, fail_token.lineno)
+        logger.info('Invalid sintax at line %s:\n\t%s' %
+                    (fail_token.lineno, line.strip()))
+        logger.info('Token: %s' % fail_token)
+        logger.error('Syntatic error detected!')
 
 
 if __name__ == '__main__':
