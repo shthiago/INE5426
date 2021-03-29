@@ -66,9 +66,9 @@ READSTAT : "read" LVALUE
          
 RETURNSTAT : "return"
              
-IFSTAT : "if" "(" EXPRESSION ")" "{" STATEMENT "}" OPT_ELSE
+IFSTAT : "if" "(" EXPRESSION ")" "{" STATELIST "}" OPT_ELSE
            
-OPT_ELSE : "else" "{" STATEMENT "}"
+OPT_ELSE : "else" "{" STATELIST "}"
          | &
             
 FORSTAT : "for" "(" ATRIBSTAT ";" EXPRESSION ";" ATRIBSTAT ")" STATEMENT
