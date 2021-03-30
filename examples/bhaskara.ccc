@@ -15,7 +15,7 @@ def calculate_delta(float a, float b, float c) {
         print "There are two distinct roots!";
     }
     
-    return delta;
+    return;
 }
 
 def bhaskara(float a, float b, float c) {
@@ -45,8 +45,11 @@ def bhaskara(float a, float b, float c) {
     }
     
     if (delta > 0) {
-        x1 = (-b + pow(delta, (1/2))) / (2 * a);
-        x2 = (-b - pow(delta, (1/2))) / (2 * a);
+        float sqrt_delta;
+        sqrt_delta = pow(delta, (1/2);
+
+        x1 = (-b + sqrt_delta)) / (2 * a);
+        x2 = (-b - sqrt_delta)) / (2 * a);
         print "There are two solutions!";
         print "x1 = ";
         print x1;

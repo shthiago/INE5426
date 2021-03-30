@@ -69,11 +69,11 @@ def main(filepath: str):
 
 
 if __name__ == '__main__':
-    # arg_parser = argparse.ArgumentParser(
-    #     description='Auxiliar script to execute compiler')
-    # arg_parser.add_argument('filepath',
-    #                         help='Target source code file')
+    arg_parser = argparse.ArgumentParser(
+        description='Auxiliar script to execute compiler')
+    arg_parser.add_argument('filepath',
+                            help='Target source code file')
 
-    # args = arg_parser.parse_args()
-    # main(args.filepath)
-    main('examples/exemplo2.ccc')
+    args = arg_parser.parse_args()
+    main(args.filepath)
+    # main('examples/exemplo2.ccc')
