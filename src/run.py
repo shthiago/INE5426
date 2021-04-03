@@ -66,7 +66,8 @@ def main(filepath: str):
                     (fail_token.lineno, line.strip()))
         logger.info('Token: %s' % fail_token)
         logger.error('Syntatic error detected!')
-    logger.info('Syntatic analysis completed with success!')
+    else:
+        logger.info('Syntatic analysis completed with success!')
 
 
 if __name__ == '__main__':
