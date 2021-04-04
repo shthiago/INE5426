@@ -109,7 +109,6 @@ class CC20202Parser:
 
         # If something other than the stack bottom is in the stack
         if len(stack) > 1:
-            print(stack)
             return (False, token)
 
         return (True, None)
