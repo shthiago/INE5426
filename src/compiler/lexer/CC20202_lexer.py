@@ -17,9 +17,9 @@ class CC20202Lexer:
         'float': 'FLOAT_KEYWORD',
         'string': 'STRING_KEYWORD',
         'break': 'BREAK',
-        'read': 'READSTAT',
-        'print': 'PRINTSTAT',
-        'return': 'RETURNSTAT',
+        'read': 'READ',
+        'print': 'PRINT',
+        'return': 'RETURN',
     }
 
     tokens = [
@@ -63,7 +63,7 @@ class CC20202Lexer:
         'IDENT',
         'FLOAT_CONSTANT',
         'INT_CONSTANT',
-        'STRING_CONSTAT',
+        'STRING_CONSTANT',
     ]
 
     # Disclaimer:
@@ -103,7 +103,7 @@ class CC20202Lexer:
 
     t_ATTRIBUTION = r'='
 
-    t_STRING_CONSTAT = r'".*"'
+    t_STRING_CONSTANT = r'".*"'
 
     # Regular expressions with some actions
 
