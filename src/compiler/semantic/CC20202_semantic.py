@@ -1,5 +1,5 @@
 """Semantic analyser"""
-from typing import List, Optional
+from typing import List, Optional, Dict
 from dataclasses import dataclass
 
 from ply import yacc
@@ -14,10 +14,18 @@ class TableEntry:
     dimesions: List[int]
     line: int
 
+    def as_json(self):
+        return {
+            'identifier_label': self.identifier_label,
+            'datatype': self.datatype,
+            'dimesions': self.dimesions,
+            'line': self.line
+        }
+
 
 class Scope:
     def __init__(self, entries: Optional[List[TableEntry]] = None,
-                 upper_scope: Optional = None):
+                 upper_scope=None):
         if entries:
             self.entries = entries
         else:
@@ -25,11 +33,13 @@ class Scope:
 
         self.upper_scope = upper_scope
 
+        self.inner_scopes = []
+
     def add_entry(self, entry: TableEntry):
         self.entries.append(entry)
 
-    def add_many(self, entries: List[TableEntry]):
-        self.entries.extend(entries)
+    def add_inner(self, scope):
+        self.inner_scopes.append(scope)
 
     def __str__(self):
         return '\n'.join([
@@ -37,13 +47,21 @@ class Scope:
             for entry in self.entries
         ]) + '\n'
 
+    def as_json(self) -> Dict:
+        return {
+            'table': [
+                entry.as_json() for entry in self.entries
+            ],
+            'inner_scopes': [scope.as_json() for scope in self.inner_scopes]
+        }
+
 
 class ScopeStack:
     def __init__(self):
         self.stack = []
 
     def pop(self):
-        self.stack.pop()
+        return self.stack.pop()
 
     def push(self, scope: Scope):
         self.stack.append(scope)
@@ -73,7 +91,11 @@ def p_empty(p):
 
 def p_new_scope(p):
     """new_scope :"""
-    scope_stack.push(Scope(upper_scope=scope_stack.seek()))
+    top_scope = scope_stack.seek()
+    new_scope = Scope(upper_scope=top_scope)
+    if top_scope:
+        top_scope.add_inner(new_scope)
+    scope_stack.push(new_scope)
 
 
 def p_pop_scope(p):
@@ -86,7 +108,8 @@ def p_prog_statment(p):
                | new_scope FUNCLIST
                | empty
     """
-    scope_stack.pop()
+    global_scope = scope_stack.pop()
+    p[0] = global_scope.as_json()
 
     # Grants that all all tables where used and popper correctly
     assert len(scope_stack) == 0  # nosec
@@ -105,7 +128,11 @@ def p_funclistaux_funclist(p):
 
 
 def p_funcdef(p):
-    """FUNCDEF : DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope"""
+    """FUNCDEF : DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS"""
+    # Go back to upper scope
+    scope_stack.pop()
+
+    # Add function declaration to current scope
     scope = scope_stack.seek()
     entry = TableEntry(p[2], 'function', [], p.lineno(2))
     scope.add_entry(entry)

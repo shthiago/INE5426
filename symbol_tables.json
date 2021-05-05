@@ -1,0 +1,166 @@
+{
+  "table": [
+    {
+      "identifier_label": "calculate_delta",
+      "datatype": "function",
+      "dimesions": [],
+      "line": 124
+    },
+    {
+      "identifier_label": "bhaskara",
+      "datatype": "function",
+      "dimesions": [],
+      "line": 144
+    },
+    {
+      "identifier_label": "main",
+      "datatype": "function",
+      "dimesions": [],
+      "line": 189
+    }
+  ],
+  "inner_scopes": [
+    {
+      "table": [
+        {
+          "identifier_label": "c",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 124
+        },
+        {
+          "identifier_label": "b",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 124
+        },
+        {
+          "identifier_label": "a",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 124
+        },
+        {
+          "identifier_label": "delta",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 125
+        }
+      ],
+      "inner_scopes": [
+        {
+          "table": [],
+          "inner_scopes": []
+        },
+        {
+          "table": [],
+          "inner_scopes": []
+        },
+        {
+          "table": [],
+          "inner_scopes": []
+        }
+      ]
+    },
+    {
+      "table": [
+        {
+          "identifier_label": "c",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 144
+        },
+        {
+          "identifier_label": "b",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 144
+        },
+        {
+          "identifier_label": "a",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 144
+        },
+        {
+          "identifier_label": "x1",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 145
+        },
+        {
+          "identifier_label": "x2",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 146
+        },
+        {
+          "identifier_label": "delta",
+          "datatype": "float",
+          "dimesions": [],
+          "line": 154
+        }
+      ],
+      "inner_scopes": [
+        {
+          "table": [],
+          "inner_scopes": []
+        },
+        {
+          "table": [],
+          "inner_scopes": []
+        },
+        {
+          "table": [],
+          "inner_scopes": []
+        },
+        {
+          "table": [
+            {
+              "identifier_label": "sqrt_delta",
+              "datatype": "float",
+              "dimesions": [],
+              "line": 172
+            },
+            {
+              "identifier_label": "half",
+              "datatype": "float",
+              "dimesions": [],
+              "line": 173
+            }
+          ],
+          "inner_scopes": []
+        }
+      ]
+    },
+    {
+      "table": [
+        {
+          "identifier_label": "result",
+          "datatype": "int",
+          "dimesions": [],
+          "line": 190
+        },
+        {
+          "identifier_label": "a",
+          "datatype": "int",
+          "dimesions": [],
+          "line": 191
+        },
+        {
+          "identifier_label": "b",
+          "datatype": "int",
+          "dimesions": [],
+          "line": 192
+        },
+        {
+          "identifier_label": "c",
+          "datatype": "int",
+          "dimesions": [],
+          "line": 193
+        }
+      ],
+      "inner_scopes": []
+    }
+  ]
+}

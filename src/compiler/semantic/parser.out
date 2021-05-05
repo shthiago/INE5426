@@ -12,7 +12,7 @@ Rule 6     PROGRAM -> empty
 Rule 7     FUNCLIST -> FUNCDEF FUNCLISTAUX
 Rule 8     FUNCLISTAUX -> FUNCLIST
 Rule 9     FUNCLISTAUX -> empty
-Rule 10    FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope
+Rule 10    FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS
 Rule 11    PARAMLIST -> DATATYPE IDENT PARAMLISTAUX
 Rule 12    PARAMLIST -> empty
 Rule 13    PARAMLISTAUX -> COMMA PARAMLIST
@@ -178,7 +178,7 @@ UNARYEXPR_OP         : 77
 VARDECL              : 18
 empty                : 6 9 12 14 30 46 48 54 58 61 64 73 78
 new_scope            : 4 5 10 25 52 53
-pop_scope            : 10
+pop_scope            : 
 
 Parsing method: LALR
 
@@ -239,7 +239,7 @@ state 2
     (52) IFSTAT -> . IF LPAREN EXPRESSION RPAREN new_scope LBRACKETS STATELIST RBRACKETS OPT_ELSE
     (55) FORSTAT -> . FOR LPAREN ATRIBSTAT SEMICOLON EXPRESSION SEMICOLON ATRIBSTAT RPAREN STATEMENT
     (2) new_scope -> .
-    (10) FUNCDEF -> . DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope
+    (10) FUNCDEF -> . DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS
     (15) DATATYPE -> . INT_KEYWORD
     (16) DATATYPE -> . FLOAT_KEYWORD
     (17) DATATYPE -> . STRING_KEYWORD
@@ -410,7 +410,7 @@ state 16
     (9) FUNCLISTAUX -> . empty
     (7) FUNCLIST -> . FUNCDEF FUNCLISTAUX
     (1) empty -> .
-    (10) FUNCDEF -> . DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope
+    (10) FUNCDEF -> . DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS
 
     $end            reduce using rule 1 (empty -> .)
     DEF             shift and go to state 25
@@ -528,7 +528,7 @@ state 24
 
 state 25
 
-    (10) FUNCDEF -> DEF . IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope
+    (10) FUNCDEF -> DEF . IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS
 
     IDENT           shift and go to state 61
 
@@ -1212,7 +1212,7 @@ state 60
 
 state 61
 
-    (10) FUNCDEF -> DEF IDENT . new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope
+    (10) FUNCDEF -> DEF IDENT . new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS
     (2) new_scope -> .
 
     LPAREN          reduce using rule 2 (new_scope -> .)
@@ -1910,7 +1910,7 @@ state 101
 
 state 102
 
-    (10) FUNCDEF -> DEF IDENT new_scope . LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope
+    (10) FUNCDEF -> DEF IDENT new_scope . LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS
 
     LPAREN          shift and go to state 126
 
@@ -2321,7 +2321,7 @@ state 125
 
 state 126
 
-    (10) FUNCDEF -> DEF IDENT new_scope LPAREN . PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope
+    (10) FUNCDEF -> DEF IDENT new_scope LPAREN . PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS
     (11) PARAMLIST -> . DATATYPE IDENT PARAMLISTAUX
     (12) PARAMLIST -> . empty
     (15) DATATYPE -> . INT_KEYWORD
@@ -2667,7 +2667,7 @@ state 143
 
 state 144
 
-    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST . RPAREN LBRACKETS STATELIST RBRACKETS pop_scope
+    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST . RPAREN LBRACKETS STATELIST RBRACKETS
 
     RPAREN          shift and go to state 163
 
@@ -2935,7 +2935,7 @@ state 162
 
 state 163
 
-    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN . LBRACKETS STATELIST RBRACKETS pop_scope
+    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN . LBRACKETS STATELIST RBRACKETS
 
     LBRACKETS       shift and go to state 173
 
@@ -3040,7 +3040,7 @@ state 172
 
 state 173
 
-    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS . STATELIST RBRACKETS pop_scope
+    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS . STATELIST RBRACKETS
     (56) STATELIST -> . STATEMENT OPT_STATELIST
     (18) STATEMENT -> . VARDECL SEMICOLON
     (19) STATEMENT -> . ATRIBSTAT SEMICOLON
@@ -3219,7 +3219,7 @@ state 180
 
 state 181
 
-    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST . RBRACKETS pop_scope
+    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST . RBRACKETS
 
     RBRACKETS       shift and go to state 187
 
@@ -3302,30 +3302,20 @@ state 186
 
 state 187
 
-    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS . pop_scope
-    (3) pop_scope -> .
+    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS .
 
-    DEF             reduce using rule 3 (pop_scope -> .)
-    $end            reduce using rule 3 (pop_scope -> .)
+    DEF             reduce using rule 10 (FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS .)
+    $end            reduce using rule 10 (FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS .)
 
-    pop_scope                      shift and go to state 189
 
 state 188
 
     (53) OPT_ELSE -> ELSE new_scope . LBRACKETS STATELIST RBRACKETS
 
-    LBRACKETS       shift and go to state 190
+    LBRACKETS       shift and go to state 189
 
 
 state 189
-
-    (10) FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope .
-
-    DEF             reduce using rule 10 (FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope .)
-    $end            reduce using rule 10 (FUNCDEF -> DEF IDENT new_scope LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS pop_scope .)
-
-
-state 190
 
     (53) OPT_ELSE -> ELSE new_scope LBRACKETS . STATELIST RBRACKETS
     (56) STATELIST -> . STATEMENT OPT_STATELIST
@@ -3366,7 +3356,7 @@ state 190
     IDENT           shift and go to state 18
 
     new_scope                      shift and go to state 4
-    STATELIST                      shift and go to state 191
+    STATELIST                      shift and go to state 190
     STATEMENT                      shift and go to state 63
     VARDECL                        shift and go to state 7
     ATRIBSTAT                      shift and go to state 9
@@ -3378,14 +3368,14 @@ state 190
     DATATYPE                       shift and go to state 17
     LVALUE                         shift and go to state 19
 
-state 191
+state 190
 
     (53) OPT_ELSE -> ELSE new_scope LBRACKETS STATELIST . RBRACKETS
 
-    RBRACKETS       shift and go to state 192
+    RBRACKETS       shift and go to state 191
 
 
-state 192
+state 191
 
     (53) OPT_ELSE -> ELSE new_scope LBRACKETS STATELIST RBRACKETS .
 

@@ -1,6 +1,8 @@
 """Main script file"""
 import argparse
 import linecache
+import json
+import sys
 from dataclasses import asdict
 
 from loguru import logger
@@ -9,6 +11,7 @@ from compiler.lexer.CC20202_lexer import lexer
 from compiler.exceptions import InvalidTokenError, SyntaticError
 from compiler.symbol_table import generate_symbol_table
 from compiler.parser.CC20202_parser import parser
+from compiler.semantic.CC20202_semantic import parse
 
 
 def main(filepath: str):
@@ -31,34 +34,9 @@ def main(filepath: str):
             tokens.append(token)
 
     logger.info('Total tokens: %s' % len(tokens))
-    # logger.info('Lista de tokens:')
-    # for token in tokens:
-    #     print('<%s, %s>' % (token.type, token.value))
-
-    symbols_table = generate_symbol_table(tokens)
-    logger.info('Imprimindo tabela de símbolos...')
-
-    # Print table
-    header = [
-        'var_name',
-        'token_index',
-        'type',
-        'line_declared',
-        'lines_referenced']
-
-    row_print = "{:<15} " * len(header)
-    print(row_print.format(*header))
-    for _, symbol_row in symbols_table.items():
-        print(row_print.format(
-            str(symbol_row.var_name),
-            str(symbol_row.token_index),
-            str(symbol_row.type),
-            str(symbol_row.line_declared),
-            str(symbol_row.lines_referenced)))
 
     logger.info('Running parser for list of tokens...')
-    success, fail_token = parser.parse(symbols_table=symbols_table,
-                                       tokens=tokens)
+    success, fail_token = parser.parse(tokens=tokens)
 
     if not success:
         line = linecache.getline(filepath, fail_token.lineno)
@@ -66,8 +44,23 @@ def main(filepath: str):
                     (fail_token.lineno, line.strip()))
         logger.info('Token: %s' % fail_token)
         logger.error('Syntatic error detected!')
+
+        sys.exit(1)
+
     else:
         logger.info('Syntatic analysis completed with success!')
+
+    logger.info('Running semantic analyser...')
+
+    # TODO implement try catch to check expressions and break
+    symbol_tables = parse(source_code)
+
+    logger.info('Semantic analyser run successfuly')
+    symbol_table_file = 'symbol_tables.json'
+    logger.info('Exporting symbol tables to %s' % symbol_table_file)
+
+    with open(symbol_table_file, 'w') as f:
+        json.dump(symbol_tables, f, indent=2, sort_keys=False)
 
 
 if __name__ == '__main__':
@@ -78,4 +71,3 @@ if __name__ == '__main__':
 
     args = arg_parser.parse_args()
     main(args.filepath)
-    # main('examples/exemplo2.ccc')
