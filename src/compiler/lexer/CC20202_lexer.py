@@ -152,7 +152,3 @@ class CC20202Lexer:
 
     def token(self):
         return self.lexer.token()
-
-
-lexer = CC20202Lexer()
-lexer.build()

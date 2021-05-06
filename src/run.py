@@ -7,8 +7,10 @@ from dataclasses import asdict
 
 from loguru import logger
 
-from compiler.lexer.CC20202_lexer import lexer
-from compiler.exceptions import InvalidTokenError, SyntaticError
+from compiler.lexer.CC20202_lexer import CC20202Lexer
+from compiler.exceptions import (InvalidTokenError,
+                                 SyntaticError,
+                                 BreakWithoutLoopError)
 from compiler.symbol_table import generate_symbol_table
 from compiler.parser.CC20202_parser import parser
 from compiler.semantic.CC20202_semantic import parse
@@ -20,6 +22,8 @@ def main(filepath: str):
         source_code = f.read()
 
     tokens = []
+    lexer = CC20202Lexer()
+    lexer.build()
     lexer.input(source_code)
     while True:
         try:
@@ -52,8 +56,15 @@ def main(filepath: str):
 
     logger.info('Running semantic analyser...')
 
-    # TODO implement try catch to check expressions and break
-    symbol_tables = parse(source_code)
+    try:
+        symbol_tables = parse(source_code)
+    except BreakWithoutLoopError as exp:
+        line = linecache.getline(filepath, int(str(exp)))
+        logger.info('Invalid break usage at line %s:\n\t%s' %
+                    (exp, line.strip()))
+        logger.error('Semantic error detected!')
+
+        sys.exit(1)
 
     logger.info('Semantic analyser run successfuly')
     symbol_table_file = 'symbol_tables.json'
