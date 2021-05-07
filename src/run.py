@@ -58,6 +58,8 @@ def main(filepath: str):
 
     try:
         symbol_tables = parse(source_code)
+        logger.info("All break statments are inside loops")
+
     except BreakWithoutLoopError as exp:
         line = linecache.getline(filepath, int(str(exp)))
         logger.info('Invalid break usage at line %s:\n\t%s' %

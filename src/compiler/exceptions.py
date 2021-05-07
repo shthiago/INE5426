@@ -11,3 +11,7 @@ class SyntaticError(Exception):
 
 class BreakWithoutLoopError(Exception):
     """Semantic error when a break is written without a loop scope"""
+
+
+class InvalidTypeOperationError(Exception):
+    """Semantic error when two variables are invalid operated"""

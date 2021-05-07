@@ -16,6 +16,28 @@ tokens = lexer.tokens
 # Used for controlling scopes
 scope_stack = ScopeStack()
 
+valid_operations = [
+    # Times
+    'int*int',
+    'float*float',
+    'int*float',
+    # Sum
+    'int+int',
+    'float+float',
+    'int+float',
+    'string+string'
+    # Minus
+    'int-int',
+    'float-float',
+    'int-float',
+    # Divide
+    'int/int',
+    'float/float',
+    'int/float',
+    # Reminder
+    'int%int',
+]
+
 
 def new_scope(is_loop: bool):
     """Create a new scope on the scope stack"""
@@ -307,7 +329,10 @@ def p_opt_allocexp(p: yacc.YaccProduction):
     """OPT_ALLOC_NUMEXP : LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP
                         | empty
     """
-    pass
+    if len(p) < 3:
+        p[0] = ''
+    else:
+        p[0] = '[' + p[2] + ']' + p[4]
 
 
 def p_expression(p: yacc.YaccProduction):
@@ -386,17 +411,9 @@ def p_rec_unaryexp_op(p: yacc.YaccProduction):
 
 
 def p_rec_unaryexp_times(p: yacc.YaccProduction):
-    """UNARYEXPR_OP : TIMES """
-    pass
-
-
-def p_rec_unaryexp_duv(p: yacc.YaccProduction):
-    """UNARYEXPR_OP : DIVIDE """
-    pass
-
-
-def p_rec_unaryexp_mod(p: yacc.YaccProduction):
-    """UNARYEXPR_OP : MODULE """
+    """UNARYEXPR_OP : TIMES
+                    | MODULE
+                    | DIVIDE """
     pass
 
 

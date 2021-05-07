@@ -81,8 +81,8 @@ Rule 75    TERM -> UNARYEXPR REC_UNARYEXPR
 Rule 76    REC_UNARYEXPR -> UNARYEXPR_OP TERM
 Rule 77    REC_UNARYEXPR -> empty
 Rule 78    UNARYEXPR_OP -> TIMES
-Rule 79    UNARYEXPR_OP -> DIVIDE
-Rule 80    UNARYEXPR_OP -> MODULE
+Rule 79    UNARYEXPR_OP -> MODULE
+Rule 80    UNARYEXPR_OP -> DIVIDE
 Rule 81    UNARYEXPR -> PLUS_OR_MINUS FACTOR
 Rule 82    UNARYEXPR -> FACTOR
 Rule 83    FACTOR -> INT_CONSTANT
@@ -99,7 +99,7 @@ ATTRIBUTION          : 31
 BREAK                : 26
 COMMA                : 13 46
 DEF                  : 10
-DIVIDE               : 79
+DIVIDE               : 80
 ELSE                 : 52
 EQ_COMPARISON        : 68
 FLOAT_CONSTANT       : 37 84
@@ -117,7 +117,7 @@ LOWER_THAN           : 64
 LPAREN               : 10 40 43 51 54 88
 LSQBRACKETS          : 29 58 59
 MINUS                : 35 74
-MODULE               : 80
+MODULE               : 79
 NEQ_COMPARISON       : 69
 NEW                  : 58
 NULL                 : 39 86
@@ -435,8 +435,8 @@ state 18
     LSQBRACKETS     shift and go to state 41
     ATTRIBUTION     reduce using rule 1 (empty -> .)
     TIMES           reduce using rule 1 (empty -> .)
-    DIVIDE          reduce using rule 1 (empty -> .)
     MODULE          reduce using rule 1 (empty -> .)
+    DIVIDE          reduce using rule 1 (empty -> .)
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -768,8 +768,8 @@ state 40
 
     ATTRIBUTION     reduce using rule 89 (LVALUE -> IDENT OPT_ALLOC_NUMEXP .)
     TIMES           reduce using rule 89 (LVALUE -> IDENT OPT_ALLOC_NUMEXP .)
-    DIVIDE          reduce using rule 89 (LVALUE -> IDENT OPT_ALLOC_NUMEXP .)
     MODULE          reduce using rule 89 (LVALUE -> IDENT OPT_ALLOC_NUMEXP .)
+    DIVIDE          reduce using rule 89 (LVALUE -> IDENT OPT_ALLOC_NUMEXP .)
     PLUS            reduce using rule 89 (LVALUE -> IDENT OPT_ALLOC_NUMEXP .)
     MINUS           reduce using rule 89 (LVALUE -> IDENT OPT_ALLOC_NUMEXP .)
     LOWER_THAN      reduce using rule 89 (LVALUE -> IDENT OPT_ALLOC_NUMEXP .)
@@ -822,8 +822,8 @@ state 42
 
     ATTRIBUTION     reduce using rule 60 (OPT_ALLOC_NUMEXP -> empty .)
     TIMES           reduce using rule 60 (OPT_ALLOC_NUMEXP -> empty .)
-    DIVIDE          reduce using rule 60 (OPT_ALLOC_NUMEXP -> empty .)
     MODULE          reduce using rule 60 (OPT_ALLOC_NUMEXP -> empty .)
+    DIVIDE          reduce using rule 60 (OPT_ALLOC_NUMEXP -> empty .)
     PLUS            reduce using rule 60 (OPT_ALLOC_NUMEXP -> empty .)
     MINUS           reduce using rule 60 (OPT_ALLOC_NUMEXP -> empty .)
     LOWER_THAN      reduce using rule 60 (OPT_ALLOC_NUMEXP -> empty .)
@@ -930,13 +930,13 @@ state 47
     (76) REC_UNARYEXPR -> . UNARYEXPR_OP TERM
     (77) REC_UNARYEXPR -> . empty
     (78) UNARYEXPR_OP -> . TIMES
-    (79) UNARYEXPR_OP -> . DIVIDE
-    (80) UNARYEXPR_OP -> . MODULE
+    (79) UNARYEXPR_OP -> . MODULE
+    (80) UNARYEXPR_OP -> . DIVIDE
     (1) empty -> .
 
     TIMES           shift and go to state 95
-    DIVIDE          shift and go to state 96
-    MODULE          shift and go to state 97
+    MODULE          shift and go to state 96
+    DIVIDE          shift and go to state 97
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -979,8 +979,8 @@ state 49
     (82) UNARYEXPR -> FACTOR .
 
     TIMES           reduce using rule 82 (UNARYEXPR -> FACTOR .)
-    DIVIDE          reduce using rule 82 (UNARYEXPR -> FACTOR .)
     MODULE          reduce using rule 82 (UNARYEXPR -> FACTOR .)
+    DIVIDE          reduce using rule 82 (UNARYEXPR -> FACTOR .)
     PLUS            reduce using rule 82 (UNARYEXPR -> FACTOR .)
     MINUS           reduce using rule 82 (UNARYEXPR -> FACTOR .)
     LOWER_THAN      reduce using rule 82 (UNARYEXPR -> FACTOR .)
@@ -1027,8 +1027,8 @@ state 52
     (83) FACTOR -> INT_CONSTANT .
 
     TIMES           reduce using rule 83 (FACTOR -> INT_CONSTANT .)
-    DIVIDE          reduce using rule 83 (FACTOR -> INT_CONSTANT .)
     MODULE          reduce using rule 83 (FACTOR -> INT_CONSTANT .)
+    DIVIDE          reduce using rule 83 (FACTOR -> INT_CONSTANT .)
     PLUS            reduce using rule 83 (FACTOR -> INT_CONSTANT .)
     MINUS           reduce using rule 83 (FACTOR -> INT_CONSTANT .)
     LOWER_THAN      reduce using rule 83 (FACTOR -> INT_CONSTANT .)
@@ -1047,8 +1047,8 @@ state 53
     (84) FACTOR -> FLOAT_CONSTANT .
 
     TIMES           reduce using rule 84 (FACTOR -> FLOAT_CONSTANT .)
-    DIVIDE          reduce using rule 84 (FACTOR -> FLOAT_CONSTANT .)
     MODULE          reduce using rule 84 (FACTOR -> FLOAT_CONSTANT .)
+    DIVIDE          reduce using rule 84 (FACTOR -> FLOAT_CONSTANT .)
     PLUS            reduce using rule 84 (FACTOR -> FLOAT_CONSTANT .)
     MINUS           reduce using rule 84 (FACTOR -> FLOAT_CONSTANT .)
     LOWER_THAN      reduce using rule 84 (FACTOR -> FLOAT_CONSTANT .)
@@ -1067,8 +1067,8 @@ state 54
     (85) FACTOR -> STRING_CONSTANT .
 
     TIMES           reduce using rule 85 (FACTOR -> STRING_CONSTANT .)
-    DIVIDE          reduce using rule 85 (FACTOR -> STRING_CONSTANT .)
     MODULE          reduce using rule 85 (FACTOR -> STRING_CONSTANT .)
+    DIVIDE          reduce using rule 85 (FACTOR -> STRING_CONSTANT .)
     PLUS            reduce using rule 85 (FACTOR -> STRING_CONSTANT .)
     MINUS           reduce using rule 85 (FACTOR -> STRING_CONSTANT .)
     LOWER_THAN      reduce using rule 85 (FACTOR -> STRING_CONSTANT .)
@@ -1087,8 +1087,8 @@ state 55
     (86) FACTOR -> NULL .
 
     TIMES           reduce using rule 86 (FACTOR -> NULL .)
-    DIVIDE          reduce using rule 86 (FACTOR -> NULL .)
     MODULE          reduce using rule 86 (FACTOR -> NULL .)
+    DIVIDE          reduce using rule 86 (FACTOR -> NULL .)
     PLUS            reduce using rule 86 (FACTOR -> NULL .)
     MINUS           reduce using rule 86 (FACTOR -> NULL .)
     LOWER_THAN      reduce using rule 86 (FACTOR -> NULL .)
@@ -1107,8 +1107,8 @@ state 56
     (87) FACTOR -> LVALUE .
 
     TIMES           reduce using rule 87 (FACTOR -> LVALUE .)
-    DIVIDE          reduce using rule 87 (FACTOR -> LVALUE .)
     MODULE          reduce using rule 87 (FACTOR -> LVALUE .)
+    DIVIDE          reduce using rule 87 (FACTOR -> LVALUE .)
     PLUS            reduce using rule 87 (FACTOR -> LVALUE .)
     MINUS           reduce using rule 87 (FACTOR -> LVALUE .)
     LOWER_THAN      reduce using rule 87 (FACTOR -> LVALUE .)
@@ -1383,13 +1383,13 @@ state 73
     (76) REC_UNARYEXPR -> . UNARYEXPR_OP TERM
     (77) REC_UNARYEXPR -> . empty
     (78) UNARYEXPR_OP -> . TIMES
-    (79) UNARYEXPR_OP -> . DIVIDE
-    (80) UNARYEXPR_OP -> . MODULE
+    (79) UNARYEXPR_OP -> . MODULE
+    (80) UNARYEXPR_OP -> . DIVIDE
     (1) empty -> .
 
     TIMES           shift and go to state 95
-    DIVIDE          shift and go to state 96
-    MODULE          shift and go to state 97
+    MODULE          shift and go to state 96
+    DIVIDE          shift and go to state 97
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -1411,13 +1411,13 @@ state 74
     (76) REC_UNARYEXPR -> . UNARYEXPR_OP TERM
     (77) REC_UNARYEXPR -> . empty
     (78) UNARYEXPR_OP -> . TIMES
-    (79) UNARYEXPR_OP -> . DIVIDE
-    (80) UNARYEXPR_OP -> . MODULE
+    (79) UNARYEXPR_OP -> . MODULE
+    (80) UNARYEXPR_OP -> . DIVIDE
     (1) empty -> .
 
     TIMES           shift and go to state 95
-    DIVIDE          shift and go to state 96
-    MODULE          shift and go to state 97
+    MODULE          shift and go to state 96
+    DIVIDE          shift and go to state 97
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -1439,13 +1439,13 @@ state 75
     (76) REC_UNARYEXPR -> . UNARYEXPR_OP TERM
     (77) REC_UNARYEXPR -> . empty
     (78) UNARYEXPR_OP -> . TIMES
-    (79) UNARYEXPR_OP -> . DIVIDE
-    (80) UNARYEXPR_OP -> . MODULE
+    (79) UNARYEXPR_OP -> . MODULE
+    (80) UNARYEXPR_OP -> . DIVIDE
     (1) empty -> .
 
     TIMES           shift and go to state 95
-    DIVIDE          shift and go to state 96
-    MODULE          shift and go to state 97
+    MODULE          shift and go to state 96
+    DIVIDE          shift and go to state 97
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -1467,13 +1467,13 @@ state 76
     (76) REC_UNARYEXPR -> . UNARYEXPR_OP TERM
     (77) REC_UNARYEXPR -> . empty
     (78) UNARYEXPR_OP -> . TIMES
-    (79) UNARYEXPR_OP -> . DIVIDE
-    (80) UNARYEXPR_OP -> . MODULE
+    (79) UNARYEXPR_OP -> . MODULE
+    (80) UNARYEXPR_OP -> . DIVIDE
     (1) empty -> .
 
     TIMES           shift and go to state 95
-    DIVIDE          shift and go to state 96
-    MODULE          shift and go to state 97
+    MODULE          shift and go to state 96
+    DIVIDE          shift and go to state 97
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -1534,8 +1534,8 @@ state 78
     LPAREN          shift and go to state 118
     LSQBRACKETS     shift and go to state 41
     TIMES           reduce using rule 1 (empty -> .)
-    DIVIDE          reduce using rule 1 (empty -> .)
     MODULE          reduce using rule 1 (empty -> .)
+    DIVIDE          reduce using rule 1 (empty -> .)
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -1839,30 +1839,30 @@ state 95
 
 state 96
 
-    (79) UNARYEXPR_OP -> DIVIDE .
+    (79) UNARYEXPR_OP -> MODULE .
 
-    PLUS            reduce using rule 79 (UNARYEXPR_OP -> DIVIDE .)
-    MINUS           reduce using rule 79 (UNARYEXPR_OP -> DIVIDE .)
-    INT_CONSTANT    reduce using rule 79 (UNARYEXPR_OP -> DIVIDE .)
-    FLOAT_CONSTANT  reduce using rule 79 (UNARYEXPR_OP -> DIVIDE .)
-    STRING_CONSTANT reduce using rule 79 (UNARYEXPR_OP -> DIVIDE .)
-    NULL            reduce using rule 79 (UNARYEXPR_OP -> DIVIDE .)
-    LPAREN          reduce using rule 79 (UNARYEXPR_OP -> DIVIDE .)
-    IDENT           reduce using rule 79 (UNARYEXPR_OP -> DIVIDE .)
+    PLUS            reduce using rule 79 (UNARYEXPR_OP -> MODULE .)
+    MINUS           reduce using rule 79 (UNARYEXPR_OP -> MODULE .)
+    INT_CONSTANT    reduce using rule 79 (UNARYEXPR_OP -> MODULE .)
+    FLOAT_CONSTANT  reduce using rule 79 (UNARYEXPR_OP -> MODULE .)
+    STRING_CONSTANT reduce using rule 79 (UNARYEXPR_OP -> MODULE .)
+    NULL            reduce using rule 79 (UNARYEXPR_OP -> MODULE .)
+    LPAREN          reduce using rule 79 (UNARYEXPR_OP -> MODULE .)
+    IDENT           reduce using rule 79 (UNARYEXPR_OP -> MODULE .)
 
 
 state 97
 
-    (80) UNARYEXPR_OP -> MODULE .
+    (80) UNARYEXPR_OP -> DIVIDE .
 
-    PLUS            reduce using rule 80 (UNARYEXPR_OP -> MODULE .)
-    MINUS           reduce using rule 80 (UNARYEXPR_OP -> MODULE .)
-    INT_CONSTANT    reduce using rule 80 (UNARYEXPR_OP -> MODULE .)
-    FLOAT_CONSTANT  reduce using rule 80 (UNARYEXPR_OP -> MODULE .)
-    STRING_CONSTANT reduce using rule 80 (UNARYEXPR_OP -> MODULE .)
-    NULL            reduce using rule 80 (UNARYEXPR_OP -> MODULE .)
-    LPAREN          reduce using rule 80 (UNARYEXPR_OP -> MODULE .)
-    IDENT           reduce using rule 80 (UNARYEXPR_OP -> MODULE .)
+    PLUS            reduce using rule 80 (UNARYEXPR_OP -> DIVIDE .)
+    MINUS           reduce using rule 80 (UNARYEXPR_OP -> DIVIDE .)
+    INT_CONSTANT    reduce using rule 80 (UNARYEXPR_OP -> DIVIDE .)
+    FLOAT_CONSTANT  reduce using rule 80 (UNARYEXPR_OP -> DIVIDE .)
+    STRING_CONSTANT reduce using rule 80 (UNARYEXPR_OP -> DIVIDE .)
+    NULL            reduce using rule 80 (UNARYEXPR_OP -> DIVIDE .)
+    LPAREN          reduce using rule 80 (UNARYEXPR_OP -> DIVIDE .)
+    IDENT           reduce using rule 80 (UNARYEXPR_OP -> DIVIDE .)
 
 
 state 98
@@ -1870,8 +1870,8 @@ state 98
     (81) UNARYEXPR -> PLUS_OR_MINUS FACTOR .
 
     TIMES           reduce using rule 81 (UNARYEXPR -> PLUS_OR_MINUS FACTOR .)
-    DIVIDE          reduce using rule 81 (UNARYEXPR -> PLUS_OR_MINUS FACTOR .)
     MODULE          reduce using rule 81 (UNARYEXPR -> PLUS_OR_MINUS FACTOR .)
+    DIVIDE          reduce using rule 81 (UNARYEXPR -> PLUS_OR_MINUS FACTOR .)
     PLUS            reduce using rule 81 (UNARYEXPR -> PLUS_OR_MINUS FACTOR .)
     MINUS           reduce using rule 81 (UNARYEXPR -> PLUS_OR_MINUS FACTOR .)
     LOWER_THAN      reduce using rule 81 (UNARYEXPR -> PLUS_OR_MINUS FACTOR .)
@@ -1971,8 +1971,8 @@ state 108
     LSQBRACKETS     shift and go to state 41
     ATTRIBUTION     reduce using rule 1 (empty -> .)
     TIMES           reduce using rule 1 (empty -> .)
-    DIVIDE          reduce using rule 1 (empty -> .)
     MODULE          reduce using rule 1 (empty -> .)
+    DIVIDE          reduce using rule 1 (empty -> .)
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -1994,13 +1994,13 @@ state 109
     (76) REC_UNARYEXPR -> . UNARYEXPR_OP TERM
     (77) REC_UNARYEXPR -> . empty
     (78) UNARYEXPR_OP -> . TIMES
-    (79) UNARYEXPR_OP -> . DIVIDE
-    (80) UNARYEXPR_OP -> . MODULE
+    (79) UNARYEXPR_OP -> . MODULE
+    (80) UNARYEXPR_OP -> . DIVIDE
     (1) empty -> .
 
     TIMES           shift and go to state 95
-    DIVIDE          shift and go to state 96
-    MODULE          shift and go to state 97
+    MODULE          shift and go to state 96
+    DIVIDE          shift and go to state 97
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -2022,13 +2022,13 @@ state 110
     (76) REC_UNARYEXPR -> . UNARYEXPR_OP TERM
     (77) REC_UNARYEXPR -> . empty
     (78) UNARYEXPR_OP -> . TIMES
-    (79) UNARYEXPR_OP -> . DIVIDE
-    (80) UNARYEXPR_OP -> . MODULE
+    (79) UNARYEXPR_OP -> . MODULE
+    (80) UNARYEXPR_OP -> . DIVIDE
     (1) empty -> .
 
     TIMES           shift and go to state 95
-    DIVIDE          shift and go to state 96
-    MODULE          shift and go to state 97
+    MODULE          shift and go to state 96
+    DIVIDE          shift and go to state 97
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -2161,13 +2161,13 @@ state 117
     (76) REC_UNARYEXPR -> . UNARYEXPR_OP TERM
     (77) REC_UNARYEXPR -> . empty
     (78) UNARYEXPR_OP -> . TIMES
-    (79) UNARYEXPR_OP -> . DIVIDE
-    (80) UNARYEXPR_OP -> . MODULE
+    (79) UNARYEXPR_OP -> . MODULE
+    (80) UNARYEXPR_OP -> . DIVIDE
     (1) empty -> .
 
     TIMES           shift and go to state 95
-    DIVIDE          shift and go to state 96
-    MODULE          shift and go to state 97
+    MODULE          shift and go to state 96
+    DIVIDE          shift and go to state 97
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
@@ -2258,8 +2258,8 @@ state 123
     (88) FACTOR -> LPAREN NUMEXPRESSION RPAREN .
 
     TIMES           reduce using rule 88 (FACTOR -> LPAREN NUMEXPRESSION RPAREN .)
-    DIVIDE          reduce using rule 88 (FACTOR -> LPAREN NUMEXPRESSION RPAREN .)
     MODULE          reduce using rule 88 (FACTOR -> LPAREN NUMEXPRESSION RPAREN .)
+    DIVIDE          reduce using rule 88 (FACTOR -> LPAREN NUMEXPRESSION RPAREN .)
     PLUS            reduce using rule 88 (FACTOR -> LPAREN NUMEXPRESSION RPAREN .)
     MINUS           reduce using rule 88 (FACTOR -> LPAREN NUMEXPRESSION RPAREN .)
     LOWER_THAN      reduce using rule 88 (FACTOR -> LPAREN NUMEXPRESSION RPAREN .)
@@ -2355,8 +2355,8 @@ state 128
 
     ATTRIBUTION     reduce using rule 59 (OPT_ALLOC_NUMEXP -> LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP .)
     TIMES           reduce using rule 59 (OPT_ALLOC_NUMEXP -> LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP .)
-    DIVIDE          reduce using rule 59 (OPT_ALLOC_NUMEXP -> LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP .)
     MODULE          reduce using rule 59 (OPT_ALLOC_NUMEXP -> LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP .)
+    DIVIDE          reduce using rule 59 (OPT_ALLOC_NUMEXP -> LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP .)
     PLUS            reduce using rule 59 (OPT_ALLOC_NUMEXP -> LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP .)
     MINUS           reduce using rule 59 (OPT_ALLOC_NUMEXP -> LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP .)
     LOWER_THAN      reduce using rule 59 (OPT_ALLOC_NUMEXP -> LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP .)
@@ -2528,13 +2528,13 @@ state 135
     (76) REC_UNARYEXPR -> . UNARYEXPR_OP TERM
     (77) REC_UNARYEXPR -> . empty
     (78) UNARYEXPR_OP -> . TIMES
-    (79) UNARYEXPR_OP -> . DIVIDE
-    (80) UNARYEXPR_OP -> . MODULE
+    (79) UNARYEXPR_OP -> . MODULE
+    (80) UNARYEXPR_OP -> . DIVIDE
     (1) empty -> .
 
     TIMES           shift and go to state 95
-    DIVIDE          shift and go to state 96
-    MODULE          shift and go to state 97
+    MODULE          shift and go to state 96
+    DIVIDE          shift and go to state 97
     PLUS            reduce using rule 1 (empty -> .)
     MINUS           reduce using rule 1 (empty -> .)
     LOWER_THAN      reduce using rule 1 (empty -> .)
