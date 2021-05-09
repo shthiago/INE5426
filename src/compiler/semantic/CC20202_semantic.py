@@ -168,8 +168,16 @@ def p_statement_break(p: yacc.YaccProduction):
     """STATEMENT : BREAK SEMICOLON"""
     # If is not inside loop scope, consider semantic failure
     current_scope = scope_stack.seek()
-    if not current_scope.is_loop:
-        raise BreakWithoutLoopError(p.lineno(2))
+
+    # Go into upper scopes trying to find a for loop
+    while True:
+        if current_scope.is_loop:
+            break
+
+        current_scope = current_scope.upper_scope
+
+        if current_scope is None:
+            raise BreakWithoutLoopError(p.lineno(2))
 
 
 def p_statement_end(p: yacc.YaccProduction):
