@@ -83,33 +83,55 @@ def p_prog_statment(p: yacc.YaccProduction):
 
 def p_funclist_funcdef(p: yacc.YaccProduction):
     """FUNCLIST: FUNCDEF FUNCLISTAUX"""
-    pass
+    p[0] = {
+        'code': p[1]['code'] + p[2]['code']
+    }
 
 
 def p_funclistaux_funclist(p: yacc.YaccProduction):
     """FUNCLISTAUX: FUNCLIST
                    | empty
     """
-    pass
+    if p[1] is None:
+        p[0] = {'code': ''}
+    else:
+        p[0] = {'code': p[1]['code']}
 
 
 def p_funcdef(p: yacc.YaccProduction):
     """FUNCDEF: DEF IDENT LPAREN PARAMLIST RPAREN LBRACKETS STATELIST RBRACKETS"""
-    pass
+    next_label = new_label()
+    if len(p) < 3:
+        p[0] = {'code': ''}
+
+    else:
+        p[0] = {
+            'code': f'goto {next_label}\n{p[2]}:\n{p[4]["code"]}{p[7]["code"]}\n{next_label}:\n'
+        }
 
 
 def p_paralist_param(p: yacc.YaccProduction):
     """PARAMLIST: DATATYPE IDENT PARAMLISTAUX
                  | empty
     """
-    pass
+    if len(p) < 3:
+        p[0] = {'code': ''}
+
+    else:
+        p[0] = {
+            'code': 'from_params ' + p[2] + '\n' + p[3]['code']
+        }
 
 
 def p_paramlistaux_paramlist(p: yacc.YaccProduction):
     """PARAMLISTAUX: COMMA PARAMLIST
                     | empty
     """
-    pass
+    if len(p) < 3:
+        p[0] = {'code': ''}
+
+    else:
+        p[0] = {'code': p[2]['code']}
 
 
 def p_datatype(p: yacc.YaccProduction):
@@ -414,14 +436,35 @@ def p_opt_allocexp(p: yacc.YaccProduction):
 
 def p_expression(p: yacc.YaccProduction):
     """EXPRESSION : NUMEXPRESSION OPT_REL_OP_NUM_EXPR"""
-    pass
+    operator = p[2]['operator']
+    result_temp_var = get_temp_var()
+
+    code = f'{result_temp_var} = {p[1]["temp_var"]}'
+
+    if operator:
+        code += f' {operator} {p[2]["temp_var"]}\n'
+    else:
+        code += '\n'
+
+    p[0] = {
+        'temp_var': result_temp_var,
+        'code': p[2]['code'] + code
+    }
 
 
 def p_opt_rel_op_num_expr(p: yacc.YaccProduction):
     """OPT_REL_OP_NUM_EXPR : REL_OP NUMEXPRESSION
                            | empty
     """
-    pass
+    if len(p) > 3:
+        p[0] = {'operator': None}
+
+    else:
+        p[0] = {
+            'temp_var': p[2]['temp_var'],
+            'operation': p[1]['code'],
+            'code': p[2]['code'],
+        }
 
 
 def p_relop_lt(p: yacc.YaccProduction):
