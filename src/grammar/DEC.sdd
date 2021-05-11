@@ -22,7 +22,7 @@ rules:
     DATATYPE.type = "string"
 
 production:     
-    OPT_VECTOR : "[" "int_constant" "]" OPT_VECTOR1
+    OPT_VECTOR : "[" "int_constant" "]" \
 rules:
     OPT_VECTOR.sin = concat([int_constant.value], OPT_VECTOR1.sin)
 

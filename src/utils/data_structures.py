@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Set, Dict, Optional
 
+from compiler.exceptions import VariableAlreadyDeclaredInScopeError
+
 
 @dataclass
 class Production:
@@ -97,7 +99,7 @@ class TableEntry:
 
 class Scope:
     def __init__(self, upper_scope=None, is_loop: bool = False):
-        self.table = []
+        self.table: List[TableEntry] = []
 
         self.upper_scope = upper_scope
 
@@ -106,7 +108,18 @@ class Scope:
         self.is_loop = is_loop
 
     def add_entry(self, entry: TableEntry):
+        is_present, line_declared = self.var_already_present(
+            entry.identifier_label)
+        if is_present:
+            raise VariableAlreadyDeclaredInScopeError(line_declared)
         self.table.append(entry)
+
+    def var_already_present(self, ident):
+        for entry in self.table:
+            if entry.identifier_label == ident:
+                return True, entry.line
+
+        return False, 0
 
     def add_inner(self, scope):
         self.inner_scopes.append(scope)

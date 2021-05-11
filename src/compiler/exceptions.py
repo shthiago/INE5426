@@ -15,3 +15,7 @@ class BreakWithoutLoopError(Exception):
 
 class InvalidTypeOperationError(Exception):
     """Semantic error when two variables are invalid operated"""
+
+
+class VariableAlreadyDeclaredInScopeError(Exception):
+    """Semantic error when a variable is declared twice inside the same scope"""

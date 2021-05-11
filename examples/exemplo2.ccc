@@ -5,7 +5,6 @@ def func1(int A, int B)
   SM[1] = B * C;
 
   int i;
-  break;
   return;
 }
 

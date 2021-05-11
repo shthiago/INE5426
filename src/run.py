@@ -10,7 +10,8 @@ from loguru import logger
 from compiler.lexer.CC20202_lexer import CC20202Lexer
 from compiler.exceptions import (InvalidTokenError,
                                  SyntaticError,
-                                 BreakWithoutLoopError)
+                                 BreakWithoutLoopError,
+                                 VariableAlreadyDeclaredInScopeError)
 from compiler.symbol_table import generate_symbol_table
 from compiler.parser.CC20202_parser import parser
 from compiler.semantic.CC20202_semantic import parse
@@ -64,6 +65,16 @@ def main(filepath: str):
         line = linecache.getline(filepath, int(str(exp)))
         logger.info('Invalid break usage at line %s:\n\t%s' %
                     (exp, line.strip()))
+        logger.error('Semantic error detected!')
+
+        sys.exit(1)
+
+    except VariableAlreadyDeclaredInScopeError as exp:
+        lineno = int(str(exp))
+        line = linecache.getline(filepath, lineno)
+        logger.info(
+            'Variable already declared! First declaration at line %s' % int(str(exp)))
+        logger.info(line)
         logger.error('Semantic error detected!')
 
         sys.exit(1)
