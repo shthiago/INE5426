@@ -5,9 +5,12 @@ input = '''
 {
     int i;
     int a;
+    i = 1;
     a = 0;
-    for (i = 0; i < 10; i = i + 1) {
-        a = a + i;
+    if (a < i) {
+        a = i;
+    } else {
+        a = 0;
     }
 }
 '''
