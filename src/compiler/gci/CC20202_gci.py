@@ -145,27 +145,27 @@ def p_datatype(p: yacc.YaccProduction):
 
 def p_statement_vardecl(p: yacc.YaccProduction):
     """STATEMENT : VARDECL SEMICOLON"""
-    p[0] = {'code': p[1]['code'] + '\n'}
+    p[0] = {'code': p[1]['code']}
 
 
 def p_statement_atrib(p: yacc.YaccProduction):
     """STATEMENT : ATRIBSTAT SEMICOLON"""
-    p[0] = {'code': p[1]['code'] + '\n'}
+    p[0] = {'code': p[1]['code']}
 
 
 def p_statement_print(p: yacc.YaccProduction):
     """STATEMENT : PRINTSTAT SEMICOLON"""
-    p[0] = {'code': p[1]['code'] + '\n'}
+    p[0] = {'code': p[1]['code']}
 
 
 def p_statement_read(p: yacc.YaccProduction):
     """STATEMENT : READSTAT SEMICOLON"""
-    p[0] = {'code': p[1]['code'] + '\n'}
+    p[0] = {'code': p[1]['code']}
 
 
 def p_statement_return(p: yacc.YaccProduction):
     """STATEMENT : RETURNSTAT SEMICOLON"""
-    p[0] = {'code': p[1]['code'] + '\n'}
+    p[0] = {'code': p[1]['code']}
 
 
 def p_statement_if(p: yacc.YaccProduction):
@@ -202,7 +202,7 @@ def p_statement_end(p: yacc.YaccProduction):
 def p_vardecl(p: yacc.YaccProduction):
     """VARDECL : DATATYPE IDENT OPT_VECTOR"""
     p[0] = {
-        'code': f'{p[1]["code"]} {p[2]}{p[3]["code"]}'
+        'code': f'{p[1]["code"]} {p[2]}{p[3]["code"]}\n'
     }
 
 
@@ -214,14 +214,14 @@ def p_opt_vector(p: yacc.YaccProduction):
         p[0] = {'code': ''}
     else:
         p[0] = {
-            'code': '[' + p[2] + ']' + p[4]
+            'code': '[' + str(p[2]) + ']' + p[4]['code']
         }
 
 
 def p_atribstat(p: yacc.YaccProduction):
     """ATRIBSTAT : LVALUE ATTRIBUTION ATRIB_RIGHT"""
     p[0] = {
-        'code': p[3]['code'] + f'{p[1]["code"]} = {p[3]["temp_var"]}\n'
+        'code': p[3]['code'] + p[1]['code'] + f'{p[1]["var_name"]} = {p[3]["temp_var"]}\n'
     }
 
 
@@ -238,10 +238,19 @@ def p_atribright_alloc(p: yacc.YaccProduction):
 def p_funccall_or_exp_minus(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : MINUS FACTOR REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR
                               | PLUS FACTOR REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    temp_var = get_temp_var()
+    previous_code = ''
+    curr_left_value = f'{p[1]} {p[2]["temp_var"]}'
+    for i in range(3, 6):
+        if p[i]['code']:
+            temp_var = get_temp_var()
+            previous_code += p[i]['code']
+            previous_code += f'{temp_var} = {curr_left_value} {p[i]["operation"]} {p[i]["temp_var"]}\n'
+
+            curr_left_value = temp_var
+
     p[0] = {
-        'temp_var': temp_var,
-        'code': p[1] + p[2]['code'] + ''.join(p[i]['code'] for i in range(3, 6))
+        'temp_var': curr_left_value,
+        'code': previous_code
     }
 
 
@@ -249,28 +258,56 @@ def p_funccall_or_exp_string(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : INT_CONSTANT REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR
                               | STRING_CONSTANT REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR
                               | FLOAT_CONSTANT REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    temp_var = get_temp_var()
+
+    curr_left_value = get_temp_var()
+    previous_code = f'{curr_left_value} = {p[1]}\n'
+    for i in range(2, 5):
+        if p[i]['code']:
+            temp_var = get_temp_var()
+            previous_code += p[i]['code']
+            previous_code += f'{temp_var} = {curr_left_value} {p[i]["operation"]} {p[i]["temp_var"]}\n'
+
+            curr_left_value = temp_var
+
     p[0] = {
-        'temp_var': temp_var,
-        'code': f'{temp_var} = ' + str(p[1]) + ''.join(str(p[i]['code']) for i in range(2, 5)) + '\n'
+        'temp_var': curr_left_value,
+        'code': previous_code
     }
 
 
 def p_funccall_or_exp_null(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : NULL REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    temp_var = get_temp_var()
+    previous_code = ''
+    curr_left_value = p[1]
+    for i in range(2, 5):
+        if p[i]['code']:
+            temp_var = get_temp_var()
+            previous_code += p[i]['code']
+            previous_code += f'{temp_var} = {curr_left_value} {p[i]["operation"]} {p[i]["temp_var"]}\n'
+
+            curr_left_value = temp_var
+
     p[0] = {
-        'temp_var': temp_var,
-        'code': 'null' + ''.join(p[i]['code'] for i in range(2, 5))
+        'temp_var': curr_left_value,
+        'code': previous_code
     }
 
 
 def p_funccall_or_exp_parentesis(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : LPAREN NUMEXPRESSION RPAREN REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    temp_var = get_temp_var()
+    previous_code = p[2]['code']
+    curr_left_value = p[2]['temp_var']
+    for i in range(4, 7):
+        if p[i]['code']:
+            temp_var = get_temp_var()
+            previous_code += p[i]['code']
+            previous_code += f'{temp_var} = {curr_left_value} {p[i]["operation"]} {p[i]["temp_var"]}\n'
+
+            curr_left_value = temp_var
+
     p[0] = {
-        'temp_var': temp_var,
-        'code': '(' + p[2]['code'] + ') ' + ''.join(p[i]['code'] for i in range(4, 7))
+        'temp_var': curr_left_value,
+        'code': previous_code
     }
 
 
@@ -279,17 +316,22 @@ def p_funccall_or_exp_ident(p: yacc.YaccProduction):
     if p[2]['funcall']:
         p[0] = {
             'code': p[2]['code'],
-            'temp_var': p[2]['temp_var']
+            'temp_var': p[2]['temp_var'],
         }
 
-    else:
+    elif p[2].get('operation', False):
         temp_var = get_temp_var()
         op = p[2]['operation']
         right_temp = p[2]['temp_var']
         code = f'{temp_var} = {p[1]} {op} {right_temp}\n'
         p[0] = {
-            'code': code,
+            'code': p[2]['code'] + code,
             'temp_var': temp_var
+        }
+    else:
+        p[0] = {
+            'code': '',
+            'temp_var': p[1]
         }
 
 
@@ -367,7 +409,7 @@ def p_printstat(p: yacc.YaccProduction):
 
 def p_readstat(p: yacc.YaccProduction):
     """READSTAT : READ LVALUE"""
-    p[0] = {'code': 'read ' + p[2]['code']}
+    p[0] = {'code': 'read ' + p[2]['var_name']}
 
 
 def p_returnstat(p: yacc.YaccProduction):
@@ -383,8 +425,8 @@ def p_ifstat(p: yacc.YaccProduction):
     else_start_label = p[8].get('start_label', None)
     cond_false_next_label = else_start_label if else_start_label else next_label
 
-    code = f"if False {cond_temp_var} goto {cond_false_next_label}\n" + \
-        p[7]['code'] + p[8]['code'] + next_label + ':\n'
+    code = p[3]['code'] + f"if False {cond_temp_var} goto {cond_false_next_label}\n" + \
+        p[6]['code'] + p[8]['code'] + next_label + ':\n'
 
     p[0] = {
         'code': code
@@ -411,6 +453,7 @@ def p_forstat(p: yacc.YaccProduction):
     """FORSTAT : new_for_loop_label FOR LPAREN ATRIBSTAT SEMICOLON EXPRESSION SEMICOLON ATRIBSTAT RPAREN LBRACKETS STATELIST RBRACKETS"""
     start_label = new_label()
     next_label = for_loop_control.get_for_loop_next_label()
+    cond_code_body = p[6]['code']
     cond_temp_var = p[6]['temp_var']
 
     first_atrib_code = p[4]['code'] + '\n'
@@ -421,6 +464,7 @@ def p_forstat(p: yacc.YaccProduction):
 
     code = first_atrib_code +\
         start_label + ':\n' +\
+        cond_code_body +\
         cond_code +\
         body_code +\
         increment_code +\
@@ -455,7 +499,7 @@ def p_allocexp(p: yacc.YaccProduction):
 
     p[0] = {
         'temp_var': temp_var,
-        'code': temp_var + ' = new ' + p[2]['code'] + '[' + p[4]['code'] + ']' + p[6]['code']
+        'code': p[6]['code'] + f'{temp_var} = new {p[2]["code"]}{p[6]["alloc_brackets"]}',
     }
 
 
@@ -464,9 +508,15 @@ def p_opt_allocexp(p: yacc.YaccProduction):
                         | empty
     """
     if len(p) < 3:
-        p[0] = {'code': ''}
+        p[0] = {
+            'code': '',
+            'alloc_brackets': ''
+        }
     else:
-        p[0] = {'code': '[' + p[2]['code'] + ']' + p[4]['code']}
+        p[0] = {
+            'code': p[2]['code'] + p[4]['code'],
+            'alloc_brackets': f'[{p[2]["temp_var"]}]' + p[4]['alloc_brackets']
+        }
 
 
 def p_expression(p: yacc.YaccProduction):
@@ -484,7 +534,7 @@ def p_expression(p: yacc.YaccProduction):
 
     p[0] = {
         'temp_var': result_temp_var,
-        'code': p[2]['code'] + code
+        'code': p[2]['code'] + p[1]['code'] + code
     }
 
 
@@ -643,7 +693,10 @@ def p_factor_const(p: yacc.YaccProduction):
 
 def p_factor_lvalue(p: yacc.YaccProduction):
     """FACTOR : LVALUE"""
-    p[0] = p[1]
+    p[0] = {
+        'code': f'{p[1]["temp_var"]} = {p[1]["var_name"]}\n',
+        'temp_var': p[1]['temp_var']
+    }
 
 
 def p_factor_expr(p: yacc.YaccProduction):
@@ -653,10 +706,11 @@ def p_factor_expr(p: yacc.YaccProduction):
 
 def p_lvalue_ident(p: yacc.YaccProduction):
     """LVALUE : IDENT OPT_ALLOC_NUMEXP"""
+    temp_var = get_temp_var()
     p[0] = {
-        # Make code and temp_var the same, for integration with otther productions
-        'code': f'{p[1]}{p[2]["code"]}',
-        'temp_var': f'{p[1]}{p[2]["code"]}'
+        'code': p[2]['code'],
+        'temp_var': temp_var,
+        'var_name': f'{p[1]}{p[2]["alloc_brackets"]}'
     }
 
 
