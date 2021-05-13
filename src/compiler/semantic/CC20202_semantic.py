@@ -6,7 +6,9 @@ from ply import yacc
 
 from compiler.lexer.CC20202_lexer import CC20202Lexer
 from utils.data_structures import Scope, ScopeStack, TableEntry, Node
-from compiler.exceptions import BreakWithoutLoopError
+from compiler.exceptions import (BreakWithoutLoopError,
+                                 InvalidTypeOperationError,
+                                 VariableNotDeclared)
 
 # Necessary for yacc instatiation
 lexer = CC20202Lexer()
@@ -19,18 +21,33 @@ scope_stack = ScopeStack()
 num_expressions: List[Tuple[Node, int]] = []
 
 
+def get_var_type(ident, lineno):
+    scope = scope_stack.seek()
+    while True:
+        for entry in scope.table:
+            if entry.identifier_label == ident:
+                return entry.datatype
+
+        scope = scope.upper_scope
+
+        if scope is None:
+            break
+
+    raise VariableNotDeclared(f'{ident},{lineno}')
+
+
 def num_expressions_as_json() -> List[Dict]:
     output = []
 
     for exp, line in num_expressions:
+        if exp.left == None and exp.right == None:
+            continue
+
         output.append({
             'ID': str(exp),
             'lineno': line,
             'tree': exp.as_json()
         })
-
-    from pprint import pprint
-    pprint(output)
 
     return output
 
@@ -42,6 +59,42 @@ def new_scope(is_loop: bool):
     if top_scope:
         top_scope.add_inner(new_scope)
     scope_stack.push(new_scope)
+
+
+def check_type(left: Node, right: Node, operation: str, lineno: int) -> str:
+    valids = {
+        ('string', '+', 'string'): 'string',
+        ('int', '+', 'int'): 'int',
+        ('int', '-', 'int'): 'int',
+        ('int', '*', 'int'): 'int',
+        ('int', '%', 'int'): 'int',
+        ('int', '/', 'int'): 'float',
+        ('float', '+', 'float'): 'float',
+        ('float', '-', 'float'): 'float',
+        ('float', '*', 'float'): 'float',
+        ('float', '/', 'float'): 'float',
+        ('float', '+', 'int'): 'float',
+        ('float', '-', 'int'): 'float',
+        ('float', '*', 'int'): 'float',
+        ('float', '/', 'int'): 'float',
+        ('int', '+', 'float'): 'float',
+        ('int', '-', 'float'): 'float',
+        ('int', '*', 'float'): 'float',
+        ('int', '/', 'float'): 'float',
+    }
+
+    result = valids.get(
+        (left.result_type, operation, right.result_type), None)
+
+    if result is None:
+        raise InvalidTypeOperationError(
+            f'{left.result_type},{right.result_type},{lineno}')
+
+    return result
+
+
+def p_error(p):
+    print('ERROR!')
 
 
 def p_empty(p: yacc.YaccProduction):
@@ -217,28 +270,108 @@ def p_atribright_alloc(p: yacc.YaccProduction):
 
 
 def p_funccall_or_exp_plus(p: yacc.YaccProduction):
-    """FUNCCALL_OR_EXPRESSION : PLUS FACTOR REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    pass
+    """FUNCCALL_OR_EXPRESSION : PLUS FACTOR REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR
+                              | MINUS FACTOR REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
+    right_node = p[2]['node']
+    if p[1] == '-':
+        right_node.value *= -1
+
+    if p[3]:
+        result_type = check_type(p[3]['node'],
+                                 right_node,
+                                 p[3]['operation'],
+                                 p.lineno(1))
+        right_node = Node(p[3]['node'],
+                          right_node,
+                          p[3]['operation'],
+                          result_type)
+
+    if p[4]:
+        result_type = check_type(p[4]['node'],
+                                 right_node,
+                                 p[4]['operation'],
+                                 p.lineno(1))
+        right_node = Node(p[4]['node'],
+                          right_node,
+                          p[4]['operation'],
+                          result_type)
+
+    num_expressions.append(right_node)
 
 
-def p_funccall_or_exp_minus(p: yacc.YaccProduction):
-    """FUNCCALL_OR_EXPRESSION : MINUS FACTOR REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    pass
-
-
-def p_funccall_or_exp_int(p: yacc.YaccProduction):
+def p_funccal_or_exp_int_const(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : INT_CONSTANT REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    pass
+    node = Node(None, None, p[1], 'int')
+
+    if p[2]:
+        result_type = check_type(node,
+                                 p[2]['node'],
+                                 p[2]['operation'],
+                                 p.lineno(2))
+        node = Node(node, p[2]['node'], p[2]['operation'], result_type)
+
+    if p[3]:
+        result_type = check_type(node,
+                                 p[3]['node'],
+                                 p[3]['operation'],
+                                 p.lineno(2))
+        node = Node(node, p[3]['node'], p[3]['operation'], result_type)
+
+    p[0] = {
+        'node': node
+    }
+
+    num_expressions.append((node, p.lineno(2)))
 
 
-def p_funccall_or_exp_float(p: yacc.YaccProduction):
+def p_funccal_or_exp_float_const(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : FLOAT_CONSTANT REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    pass
+    node = Node(None, None, p[1], 'float')
+
+    if p[2]:
+        result_type = check_type(node,
+                                 p[2]['node'],
+                                 p[2]['operation'],
+                                 p.lineno(2))
+        node = Node(node, p[2]['node'], p[2]['operation'], result_type)
+
+    if p[3]:
+        result_type = check_type(node,
+                                 p[3]['node'],
+                                 p[3]['operation'],
+                                 p.lineno(2))
+        node = Node(node, p[3]['node'], p[3]['operation'], result_type)
+
+    p[0] = {
+        'node': node
+    }
+
+    num_expressions.append((node, p.lineno(2)))
 
 
-def p_funccall_or_exp_string(p: yacc.YaccProduction):
+def p_funccal_or_exp_string_const(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : STRING_CONSTANT REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    pass
+    node = Node(None, None, p[1], 'string')
+
+    if p[2]:
+        result_type = check_type(node,
+                                 p[2]['node'],
+                                 p[2]['operation'],
+                                 p.lineno(1))
+        node = Node(node, p[2]['node'], p[2]['operation'], result_type)
+
+    if p[3]:
+        result_type = check_type(node,
+                                 p[3]['node'],
+                                 p[3]['operation'],
+                                 p.lineno(1))
+        node = Node(node, p[3]['node'], p[3]['operation'], result_type)
+
+    p[0] = {
+        'node': node
+    }
+
+    num_expressions.append((node, p.lineno(1)))
 
 
 def p_funccall_or_exp_null(p: yacc.YaccProduction):
@@ -248,17 +381,70 @@ def p_funccall_or_exp_null(p: yacc.YaccProduction):
 
 def p_funccall_or_exp_parentesis(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : LPAREN NUMEXPRESSION RPAREN REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    num_expressions.append((p[2]['node'], p.lineno(2)))
+    node = p[2]['node']
+
+    if p[4]:
+        result_type = check_type(node,
+                                 p[4]['node'],
+                                 p[4]['operation'],
+                                 p.lineno(1))
+        node = Node(node, p[4]['node'], p[4]['operation'], result_type)
+
+    if p[5]:
+        result_type = check_type(node,
+                                 p[5]['node'],
+                                 p[5]['operation'],
+                                 p.lineno(1))
+        node = Node(node, p[5]['node'], p[5]['operation'], result_type)
+
+    p[0] = {
+        'node': node
+    }
+
+    num_expressions.append((node, p.lineno(1)))
 
 
 def p_funccall_or_exp_ident(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : IDENT FOLLOW_IDENT"""
-    pass
+    node = Node(None, None, p[1], get_var_type(p[1], p.lineno(1)))
+
+    if p[2]:
+        node.value += p[2]['vec_access']
+        result_type = check_type(node,
+                                 p[2]['node'],
+                                 p[2]['operation'],
+                                 p.lineno(1))
+        node = Node(node, p[2]['node'], p[2]['operation'], result_type)
+
+        num_expressions.append((node, p.lineno(1)))
 
 
 def p_follow_ident_alloc(p: yacc.YaccProduction):
     """FOLLOW_IDENT : OPT_ALLOC_NUMEXP REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    pass
+    node = None
+    operation = ''
+
+    if p[2]:
+        node = p[2]['node']
+        operation = p[2]['operation']
+
+    if p[3]:
+        if node is None:
+            node = p[3]['node']
+            operation = p[3]['operation']
+
+        else:
+            result_type = check_type(node,
+                                     p[3]['node'],
+                                     p[3]['operation'],
+                                     p.lineno(0))
+            node = Node(node, p[3]['node'], p[3]['operation'], result_type)
+
+    p[0] = {
+        'vec_access': p[1],
+        'node': node,
+        'operation': operation
+    }
 
 
 def p_follow_ident_parentesis(p: yacc.YaccProduction):
@@ -329,7 +515,7 @@ def p_opt_statelist(p: yacc.YaccProduction):
 
 def p_allocexp(p: yacc.YaccProduction):
     """ALLOCEXPRESSION : NEW DATATYPE LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP"""
-    num_expressions.append((p[4]['node'], p.lineno(4)))
+    num_expressions.append((p[4]['node'], p.lineno(1)))
 
 
 def p_opt_allocexp(p: yacc.YaccProduction):
@@ -341,7 +527,7 @@ def p_opt_allocexp(p: yacc.YaccProduction):
     else:
         p[0] = '[' + str(p[2]) + ']' + p[4]
 
-        num_expressions.append((p[2]['node'], p.lineno(2)))
+        num_expressions.append((p[2]['node'], p.lineno(1)))
 
 
 def p_expression(p: yacc.YaccProduction):
@@ -357,7 +543,7 @@ def p_opt_rel_op_num_expr(p: yacc.YaccProduction):
         pass
 
     else:
-        num_expressions.append((p[2]['node'], p.lineno(2)))
+        num_expressions.append((p[2]['node'], p.lineno(1)))
 
 
 def p_relop_lt(p: yacc.YaccProduction):
@@ -395,8 +581,15 @@ def p_numexp(p: yacc.YaccProduction):
         p[0] = p[1]
 
     else:
+        result_type = check_type(p[1]['node'],
+                                 p[2]['node'],
+                                 p[2]['operation'],
+                                 p.lineno(1))
         p[0] = {
-            'node': Node(p[1]['node'], p[2]['node'], p[2]['operation'])
+            'node': Node(p[1]['node'],
+                         p[2]['node'],
+                         p[2]['operation'],
+                         result_type)
         }
 
 
@@ -410,8 +603,13 @@ def p_rec_plus_minus(p: yacc.YaccProduction):
 
     elif p[3]:
         # Case there's another recursive operation being made
+        result_type = check_type(p[2]['node'],
+                                 p[3]['node'],
+                                 p[3]['operation'],
+                                 p.lineno(1))
         p[0] = {
-            'node': Node(p[2]['node'], p[3]['node'], p[3]['operation']),
+            'node': Node(p[2]['node'], p[3]['node'],
+                         p[3]['operation'], result_type),
             'operation': p[1]['operation']
         }
     else:
@@ -432,8 +630,12 @@ def p_term_unary_exp(p: yacc.YaccProduction):
     """TERM : UNARYEXPR REC_UNARYEXPR"""
     if p[2]:
         # If there's another operation being made
+        result_type = check_type(p[1]['node'],
+                                 p[2]['node'],
+                                 p[2]['operation'],
+                                 p.lineno(1))
         p[0] = {
-            'node': Node(p[1]['node'], p[2]['node'], p[2]['operation']),
+            'node': Node(p[1]['node'], p[2]['node'], p[2]['operation'], result_type),
             'operation': p[2]['operation']
         }
 
@@ -469,9 +671,9 @@ def p_rec_unaryexp_times(p: yacc.YaccProduction):
 def p_rec_unaryexp_plusminus(p: yacc.YaccProduction):
     """UNARYEXPR : PLUS_OR_MINUS FACTOR"""
     if p[1]['operation'] == '-':
-        p[1]['node'].value *= -1
+        p[2]['node'].value *= -1
 
-    p[0] = p[1]
+    p[0] = p[2]
 
 
 def p_rec_unaryexp_factor(p: yacc.YaccProduction):
@@ -480,15 +682,23 @@ def p_rec_unaryexp_factor(p: yacc.YaccProduction):
 
 
 def p_factor_int_cte(p: yacc.YaccProduction):
-    """FACTOR : INT_CONSTANT
-              | FLOAT_CONSTANT
-              | STRING_CONSTANT"""
-    p[0] = {'node': Node(None, None, p[1])}
+    """FACTOR : INT_CONSTANT"""
+    p[0] = {'node': Node(None, None, p[1], 'int')}
+
+
+def p_factor_float_cte(p: yacc.YaccProduction):
+    """FACTOR : FLOAT_CONSTANT"""
+    p[0] = {'node': Node(None, None, p[1], 'float')}
+
+
+def p_factor_string_cte(p: yacc.YaccProduction):
+    """FACTOR : STRING_CONSTANT"""
+    p[0] = {'node': Node(None, None, p[1], 'string')}
 
 
 def p_factor_null(p: yacc.YaccProduction):
     """FACTOR : NULL"""
-    p[0] = {'node': Node(None, None, None)}
+    p[0] = {'node': Node(None, None, None, 'null')}
 
 
 def p_factor_lvalue(p: yacc.YaccProduction):
@@ -500,13 +710,14 @@ def p_factor_expr(p: yacc.YaccProduction):
     """FACTOR : LPAREN NUMEXPRESSION RPAREN"""
     p[0] = p[2]
 
-    num_expressions.append((p[2]['node'], p.lineno(2)))
+    num_expressions.append((p[2]['node'], p.lineno(1)))
 
 
 def p_lvalue_ident(p: yacc.YaccProduction):
     """LVALUE : IDENT OPT_ALLOC_NUMEXP"""
     p[0] = {
-        'node': Node(None, None, p[1] + p[2])
+        'node': Node(None, None, p[1] + p[2],
+                     result_type=get_var_type(p[1], p.lineno(1)))
     }
 
 

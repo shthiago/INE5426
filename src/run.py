@@ -11,7 +11,9 @@ from compiler.lexer.CC20202_lexer import CC20202Lexer
 from compiler.exceptions import (InvalidTokenError,
                                  SyntaticError,
                                  BreakWithoutLoopError,
-                                 VariableAlreadyDeclaredInScopeError)
+                                 VariableAlreadyDeclaredInScopeError,
+                                 InvalidTypeOperationError,
+                                 VariableNotDeclared)
 from compiler.symbol_table import generate_symbol_table
 from compiler.parser.CC20202_parser import parser
 from compiler.semantic.CC20202_semantic import parse
@@ -79,6 +81,26 @@ def main(filepath: str):
         line = linecache.getline(filepath, lineno)
         logger.info(
             'Variable already declared! First declaration at line %s' % int(str(exp)))
+        logger.info(line)
+        logger.error('Semantic error detected!')
+
+        sys.exit(1)
+
+    except InvalidTypeOperationError as exp:
+        left, right, lineno = str(exp).split(',')
+        line = linecache.getline(filepath, int(lineno))
+        logger.info(
+            'Invalid operation between %s and %s at line %s' % (left, right, lineno))
+        logger.info(line)
+        logger.error('Semantic error detected!')
+
+        sys.exit(1)
+
+    except VariableNotDeclared as exp:
+        ident, lineno = str(exp).split(',')
+        line = linecache.getline(filepath, int(lineno))
+        logger.info('Variable %s used before declare at line %s' %
+                    (ident, line))
         logger.info(line)
         logger.error('Semantic error detected!')
 

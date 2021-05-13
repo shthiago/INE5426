@@ -1,3 +1,18 @@
+def pow(int n, int e) {
+    int output;
+    output = 1;
+    int i;
+    for (i = 0; i < e; i = i + 1) {
+        output = output * n;
+    }
+
+    print "Resultado é ";
+    print output;
+    print "\n";
+
+    return;
+}
+
 def calculate_delta(float a, float b, float c) {
     float delta;
     
@@ -47,8 +62,6 @@ def bhaskara(float a, float b, float c) {
     
     if (delta > 0) {
         float sqrt_delta;
-        float half;
-        half = 1/2;
         sqrt_delta = pow(delta, half);
 
         x1 = (-b + sqrt_delta) / (2 * a);

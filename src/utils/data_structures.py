@@ -165,12 +165,14 @@ class ScopeStack:
 class Node:
 
     def __init__(self, left: Optional['Node'], right: Optional['node'],
-                 value: Optional[Union[str, int, float]]):
+                 value: Optional[Union[str, int, float]], result_type: str):
         self.left = left
         self.right = right
         self.value = value
 
-        self.id = uuid.uuid1()
+        self.result_type = result_type
+
+        self.id = uuid.uuid4()
 
     def as_json(self) -> Dict:
         left = None

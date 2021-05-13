@@ -19,3 +19,7 @@ class InvalidTypeOperationError(Exception):
 
 class VariableAlreadyDeclaredInScopeError(Exception):
     """Semantic error when a variable is declared twice inside the same scope"""
+
+
+class VariableNotDeclared(Exception):
+    """Semantic error when a variable was used before declared"""
