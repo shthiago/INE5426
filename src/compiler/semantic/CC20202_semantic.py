@@ -16,6 +16,14 @@ tokens = lexer.tokens
 # Used for controlling scopes
 scope_stack = ScopeStack()
 
+class Node():
+    def __init__(self, left, right, value, operation):
+        self.left = left
+        self.value = value
+        self.right = right
+        self.operation = operation
+
+tree = []
 
 def new_scope(is_loop: bool):
     """Create a new scope on the scope stack"""
@@ -364,92 +372,155 @@ def p_relop_neq(p: yacc.YaccProduction):
 
 def p_numexp(p: yacc.YaccProduction):
     """NUMEXPRESSION : TERM REC_PLUS_MINUS_TERM"""
-    pass
+    if len(p) > 1:
+        if p[2]:
+            p[0] = Node(p[1], p[2], None, p[2]) # fixme
+        else:
+            p[0] = p[1]
+        tree.append(p[0])
 
 
 def p_rec_plus_minus(p: yacc.YaccProduction):
     """REC_PLUS_MINUS_TERM : PLUS_OR_MINUS TERM REC_PLUS_MINUS_TERM
                            | empty
     """
-    pass
-
+    if len(p) > 2:
+        op = p[1]
+        if op:
+            p[0] = Node(p[2], p[3], None, op)
+        else:
+            p[0] = p[2]
+    else:
+        p[0] = None
 
 def p_plus(p: yacc.YaccProduction):
     """PLUS_OR_MINUS : PLUS """
-    pass
+    if len(p) > 1:
+        p[0] = p[1]
 
 
 def p_minus(p: yacc.YaccProduction):
     """PLUS_OR_MINUS : MINUS """
-    pass
+    if len(p) > 1:
+        p[0] = p[1]
 
 
 def p_term_unary_exp(p: yacc.YaccProduction):
     """TERM : UNARYEXPR REC_UNARYEXPR"""
-    pass
+    if len(p) > 2:
+        if p[2]:
+            op, node = p[2]
+            if op:
+                p[0] = Node(p[1], node, None, op)
+        else:
+            p[0] = p[1]
 
 
 def p_rec_unaryexp_op(p: yacc.YaccProduction):
     """REC_UNARYEXPR : UNARYEXPR_OP TERM
                      | empty
     """
-    pass
+    if len(p) > 2:
+        p[0] = (p[1], p[2])
 
 
 def p_rec_unaryexp_times(p: yacc.YaccProduction):
     """UNARYEXPR_OP : TIMES
                     | MODULE
                     | DIVIDE """
-    pass
+    if len(p) > 1:
+        p[0] = p[1]
 
 
 def p_rec_unaryexp_plusminus(p: yacc.YaccProduction):
     """UNARYEXPR : PLUS_OR_MINUS FACTOR"""
-    pass
+    if len(p) > 1:
+        node_1 = Node(None, None, 0, None)
+        node_2 = Node(None, None, p[2].value, None)
+        
+        node_sin = (node_1, node_2, None, p[1])
+        p[0] = node_sin
+        tree.append(node_sin)
 
 
 def p_rec_unaryexp_factor(p: yacc.YaccProduction):
     """UNARYEXPR : FACTOR"""
-    pass
+    if len(p) > 1:
+        node = Node(None, None, p[1].value, None)
+        p[0] = node
+        tree.append(node)
 
 
 def p_factor_int_cte(p: yacc.YaccProduction):
     """FACTOR : INT_CONSTANT """
-    pass
+    if len(p) > 1:
+        value = {"type": "int", "value": p[1]}
+        node = Node(None, None, value, None)
+        p[0] = node
+        tree.append(node)
 
 
 def p_factor_float_cte(p: yacc.YaccProduction):
     """FACTOR : FLOAT_CONSTANT """
-    pass
+    if len(p) > 1:
+        value = {"type": "float", "value": p[1]}
+        node = Node(None, None, value, None)
+        p[0] = node
+        tree.append(node)
 
 
 def p_factor_string_cte(p: yacc.YaccProduction):
     """FACTOR : STRING_CONSTANT """
-    pass
+    if len(p) > 1:
+        value = {"type": "string", "value": p[1]}
+        node = Node(None, None, value, None)
+        p[0] = node
+        tree.append(node)
 
 
 def p_factor_null(p: yacc.YaccProduction):
     """FACTOR : NULL """
-    pass
+    if len(p) > 1:
+        value = {"type": "null", "value": None}
+        node = Node(None, None, value, None)
+        p[0] = node
+        tree.append(node)
 
 
 def p_factor_lvalue(p: yacc.YaccProduction):
     """FACTOR : LVALUE"""
-    pass
+    if len(p) > 1:
+        p[0] = p[1]
 
 
 def p_factor_expr(p: yacc.YaccProduction):
     """FACTOR : LPAREN NUMEXPRESSION RPAREN"""
-    pass
+    if len(p) > 1:
+        p[0] = p[1]
 
 
 def p_lvalue_ident(p: yacc.YaccProduction):
     """LVALUE : IDENT OPT_ALLOC_NUMEXP"""
-    pass
+    if len(p) > 1:
+        value = {"type": "ident", "value": p[1]}
+        node = Node(None, None, value, None)
+        p[0] = node
+        tree.append(node)
 
 
 _parser = yacc.yacc(start='PROGRAM', check_recursion=False)
 
-
 def parse(text: str):
-    return _parser.parse(text, lexer=lexer)
+    parsing = _parser.parse(text, lexer=lexer)
+    print("tree...")
+    for node in tree:
+        left_value = None
+        right_value = None
+        left = node.left
+        right = node.right
+        if left:
+            left_value = (left.value, left.operation)
+        if right:
+            right_value = (right.value, right.operation)
+        print(f"<{left_value}>, | {node.value, node.operation} |, <{right_value}>")
+    return parsing
