@@ -1,11 +1,11 @@
 """Semantic analyser"""
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 from dataclasses import dataclass
 
 from ply import yacc
 
 from compiler.lexer.CC20202_lexer import CC20202Lexer
-from utils.data_structures import Scope, ScopeStack, TableEntry
+from utils.data_structures import Scope, ScopeStack, TableEntry, Node
 from compiler.exceptions import BreakWithoutLoopError
 
 # Necessary for yacc instatiation
@@ -15,6 +15,24 @@ tokens = lexer.tokens
 
 # Used for controlling scopes
 scope_stack = ScopeStack()
+
+num_expressions: List[Tuple[Node, int]] = []
+
+
+def num_expressions_as_json() -> List[Dict]:
+    output = []
+
+    for exp, line in num_expressions:
+        output.append({
+            'ID': str(exp),
+            'lineno': line,
+            'tree': exp.as_json()
+        })
+
+    from pprint import pprint
+    pprint(output)
+
+    return output
 
 
 def new_scope(is_loop: bool):
@@ -47,7 +65,10 @@ def p_prog_statment(p: yacc.YaccProduction):
                | empty
     """
     global_scope = scope_stack.pop()
-    p[0] = global_scope.as_json()
+    p[0] = {
+        'scopes': global_scope.as_json(),
+        'num_expressions': num_expressions_as_json()
+    }
 
     # Grants that all all tables where used and popper correctly
     assert len(scope_stack) == 0  # nosec
@@ -227,7 +248,7 @@ def p_funccall_or_exp_null(p: yacc.YaccProduction):
 
 def p_funccall_or_exp_parentesis(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : LPAREN NUMEXPRESSION RPAREN REC_UNARYEXPR REC_PLUS_MINUS_TERM OPT_REL_OP_NUM_EXPR"""
-    pass
+    num_expressions.append((p[2]['node'], p.lineno(2)))
 
 
 def p_funccall_or_exp_ident(p: yacc.YaccProduction):
@@ -308,7 +329,7 @@ def p_opt_statelist(p: yacc.YaccProduction):
 
 def p_allocexp(p: yacc.YaccProduction):
     """ALLOCEXPRESSION : NEW DATATYPE LSQBRACKETS NUMEXPRESSION RSQBRACKETS OPT_ALLOC_NUMEXP"""
-    pass
+    num_expressions.append((p[4]['node'], p.lineno(4)))
 
 
 def p_opt_allocexp(p: yacc.YaccProduction):
@@ -318,19 +339,25 @@ def p_opt_allocexp(p: yacc.YaccProduction):
     if len(p) < 3:
         p[0] = ''
     else:
-        p[0] = '[' + str(p[2]) + ']' + str(p[4])
+        p[0] = '[' + str(p[2]) + ']' + p[4]
+
+        num_expressions.append((p[2]['node'], p.lineno(2)))
 
 
 def p_expression(p: yacc.YaccProduction):
     """EXPRESSION : NUMEXPRESSION OPT_REL_OP_NUM_EXPR"""
-    pass
+    num_expressions.append((p[1]['node'], p.lineno(1)))
 
 
 def p_opt_rel_op_num_expr(p: yacc.YaccProduction):
     """OPT_REL_OP_NUM_EXPR : REL_OP NUMEXPRESSION
                            | empty
     """
-    pass
+    if len(p) < 3:
+        pass
+
+    else:
+        num_expressions.append((p[2]['node'], p.lineno(2)))
 
 
 def p_relop_lt(p: yacc.YaccProduction):
@@ -364,88 +391,123 @@ def p_relop_neq(p: yacc.YaccProduction):
 
 def p_numexp(p: yacc.YaccProduction):
     """NUMEXPRESSION : TERM REC_PLUS_MINUS_TERM"""
-    pass
+    if p[2] is None:
+        p[0] = p[1]
+
+    else:
+        p[0] = {
+            'node': Node(p[1]['node'], p[2]['node'], p[2]['operation'])
+        }
 
 
 def p_rec_plus_minus(p: yacc.YaccProduction):
     """REC_PLUS_MINUS_TERM : PLUS_OR_MINUS TERM REC_PLUS_MINUS_TERM
                            | empty
     """
-    pass
+    if len(p) < 3:
+        # Case empty
+        p[0] = None
+
+    elif p[3]:
+        # Case there's another recursive operation being made
+        p[0] = {
+            'node': Node(p[2]['node'], p[3]['node'], p[3]['operation']),
+            'operation': p[1]['operation']
+        }
+    else:
+        # Case there's no more operattions to the right
+        p[0] = {
+            'node': p[2]['node'],
+            'operation': p[1]['operation']
+        }
 
 
 def p_plus(p: yacc.YaccProduction):
-    """PLUS_OR_MINUS : PLUS """
-    pass
-
-
-def p_minus(p: yacc.YaccProduction):
-    """PLUS_OR_MINUS : MINUS """
-    pass
+    """PLUS_OR_MINUS : PLUS
+                     | MINUS"""
+    p[0] = {'operation': p[1]}
 
 
 def p_term_unary_exp(p: yacc.YaccProduction):
     """TERM : UNARYEXPR REC_UNARYEXPR"""
-    pass
+    if p[2]:
+        # If there's another operation being made
+        p[0] = {
+            'node': Node(p[1]['node'], p[2]['node'], p[2]['operation']),
+            'operation': p[2]['operation']
+        }
+
+    else:
+        # Pass the UNARYEXPR node upwards
+        p[0] = {
+            'node': p[1]['node']
+        }
 
 
 def p_rec_unaryexp_op(p: yacc.YaccProduction):
     """REC_UNARYEXPR : UNARYEXPR_OP TERM
                      | empty
     """
-    pass
+    if len(p) < 3:
+        # Case empty
+        p[0] = None
+
+    else:
+        p[0] = {
+            'node': p[2]['node'],
+            'operation': p[1]['operation']
+        }
 
 
 def p_rec_unaryexp_times(p: yacc.YaccProduction):
     """UNARYEXPR_OP : TIMES
                     | MODULE
                     | DIVIDE """
-    pass
+    p[0] = {'operation': p[1]}
 
 
 def p_rec_unaryexp_plusminus(p: yacc.YaccProduction):
     """UNARYEXPR : PLUS_OR_MINUS FACTOR"""
-    pass
+    if p[1]['operation'] == '-':
+        p[1]['node'].value *= -1
+
+    p[0] = p[1]
 
 
 def p_rec_unaryexp_factor(p: yacc.YaccProduction):
     """UNARYEXPR : FACTOR"""
-    pass
+    p[0] = p[1]
 
 
 def p_factor_int_cte(p: yacc.YaccProduction):
-    """FACTOR : INT_CONSTANT """
-    pass
-
-
-def p_factor_float_cte(p: yacc.YaccProduction):
-    """FACTOR : FLOAT_CONSTANT """
-    pass
-
-
-def p_factor_string_cte(p: yacc.YaccProduction):
-    """FACTOR : STRING_CONSTANT """
-    pass
+    """FACTOR : INT_CONSTANT
+              | FLOAT_CONSTANT
+              | STRING_CONSTANT"""
+    p[0] = {'node': Node(None, None, p[1])}
 
 
 def p_factor_null(p: yacc.YaccProduction):
-    """FACTOR : NULL """
-    pass
+    """FACTOR : NULL"""
+    p[0] = {'node': Node(None, None, None)}
 
 
 def p_factor_lvalue(p: yacc.YaccProduction):
     """FACTOR : LVALUE"""
-    pass
+    p[0] = p[1]
 
 
 def p_factor_expr(p: yacc.YaccProduction):
     """FACTOR : LPAREN NUMEXPRESSION RPAREN"""
-    pass
+    p[0] = p[2]
+
+    num_expressions.append((p[2]['node'], p.lineno(2)))
 
 
 def p_lvalue_ident(p: yacc.YaccProduction):
     """LVALUE : IDENT OPT_ALLOC_NUMEXP"""
-    pass
+    p[0] = {
+        'node': Node(None, None, p[1] + p[2])
+    }
 
 
 _parser = yacc.yacc(start='PROGRAM', check_recursion=False)

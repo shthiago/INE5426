@@ -59,7 +59,11 @@ def main(filepath: str):
     logger.info('Running semantic analyser...')
 
     try:
-        symbol_tables = parse(source_code)
+        semantic_analyser_result = parse(source_code)
+
+        symbol_tables = semantic_analyser_result['scopes']
+        num_expressions = semantic_analyser_result['num_expressions']
+
         logger.info("All break statments are inside loops")
 
     except BreakWithoutLoopError as exp:
@@ -86,6 +90,12 @@ def main(filepath: str):
 
     with open(symbol_table_file, 'w') as f:
         json.dump(symbol_tables, f, indent=2, sort_keys=False)
+
+    expressions_file = 'expressions.json'
+    logger.info('Exporting symbol tables to %s' % expressions_file)
+
+    with open(expressions_file, 'w') as f:
+        json.dump(num_expressions, f, indent=2, sort_keys=False)
 
     logger.info('Running intermediary code generation...')
     code = gen_code(source_code)

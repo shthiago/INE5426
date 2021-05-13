@@ -1,5 +1,6 @@
+import uuid
 from dataclasses import dataclass
-from typing import List, Set, Dict, Optional
+from typing import List, Set, Dict, Optional, Union
 
 from compiler.exceptions import VariableAlreadyDeclaredInScopeError
 
@@ -158,3 +159,33 @@ class ScopeStack:
 
     def __len__(self):
         return len(self.stack)
+
+
+@dataclass
+class Node:
+
+    def __init__(self, left: Optional['Node'], right: Optional['node'],
+                 value: Optional[Union[str, int, float]]):
+        self.left = left
+        self.right = right
+        self.value = value
+
+        self.id = uuid.uuid1()
+
+    def as_json(self) -> Dict:
+        left = None
+        if self.left is not None:
+            left = self.left.as_json()
+
+        right = None
+        if self.right is not None:
+            right = self.right.as_json()
+
+        return {
+            'value': self.value,
+            'left': left,
+            'right': right
+        }
+
+    def __str__(self):
+        return f'<NodeId: {self.id}>'
