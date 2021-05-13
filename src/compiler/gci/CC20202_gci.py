@@ -370,7 +370,7 @@ def p_follow_ident_parentesis(p: yacc.YaccProduction):
     temp_var = get_temp_var()
     code = f'{temp_var} = call {func_ident}, {num_params}\n'
     p[0] = {
-        'code': p[1]['code'] + code,
+        'code': p[2]['code'] + code,
         'temp_var': temp_var,
         'funcall': True
     }
@@ -404,7 +404,7 @@ def p_paramlistcallaux(p: yacc.YaccProduction):
 
 def p_printstat(p: yacc.YaccProduction):
     """PRINTSTAT : PRINT EXPRESSION"""
-    p[0] = {'code': 'print ' + p[2]['code']}
+    p[0] = {'code': p[2]['code'] + f'print {p[2]["temp_var"]}\n'}
 
 
 def p_readstat(p: yacc.YaccProduction):
@@ -414,7 +414,7 @@ def p_readstat(p: yacc.YaccProduction):
 
 def p_returnstat(p: yacc.YaccProduction):
     """RETURNSTAT : RETURN"""
-    p[0] = {'code': p[1]}
+    p[0] = {'code': f'{p[1]}\n'}
 
 
 def p_ifstat(p: yacc.YaccProduction):

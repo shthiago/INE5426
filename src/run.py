@@ -15,6 +15,7 @@ from compiler.exceptions import (InvalidTokenError,
 from compiler.symbol_table import generate_symbol_table
 from compiler.parser.CC20202_parser import parser
 from compiler.semantic.CC20202_semantic import parse
+from compiler.gci.CC20202_gci import gen_code
 
 
 def main(filepath: str):
@@ -85,6 +86,14 @@ def main(filepath: str):
 
     with open(symbol_table_file, 'w') as f:
         json.dump(symbol_tables, f, indent=2, sort_keys=False)
+
+    logger.info('Running intermediary code generation...')
+    code = gen_code(source_code)
+    intermediary_code_file = 'intermediary_code.gic'
+    logger.info('Exportind intermediary code to %s' % intermediary_code_file)
+
+    with open(intermediary_code_file, 'w') as f:
+        f.write(code)
 
 
 if __name__ == '__main__':
