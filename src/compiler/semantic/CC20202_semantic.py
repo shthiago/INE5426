@@ -408,6 +408,9 @@ def p_funccall_or_exp_ident(p: yacc.YaccProduction):
     """FUNCCALL_OR_EXPRESSION : IDENT FOLLOW_IDENT"""
     node = Node(None, None, p[1], get_var_type(p[1], p.lineno(1)))
 
+    if p[2] is None or p[2]['node'] == None:
+        return
+
     if p[2]:
         node.value += p[2]['vec_access']
         result_type = check_type(node,

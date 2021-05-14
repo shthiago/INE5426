@@ -72,32 +72,6 @@ def pow(int n, int e) {
     return;
 }
 
-def factorial(int n) {
-	if (n < 0) {
-		print "Resultado é: -1 por definição\n";
-		return;
-	}
-	
-	if (n <= 1) {
-		print "Resultado é: 1\n";
-		return;
-	}
-	
-	int result;
-	int prev_fact;
-	int prev_n;
-	
-	prev_n = n - 1;
-	prev_fact = factorial(prev_n);
-	result = n * prev_fact;
-	
-	print "Resultado é: ";
-    print result;
-    print "\n";
-	
-	return;
-}
-
 def main() {
     int aux_a;
     int aux_b;
@@ -130,8 +104,4 @@ def main() {
     aux_b = 32; 
     print "GCD de 97 e 32";
     return_value = gcd(aux_a, aux_b);
-
-    aux_a = 12;
-    print "Fatorial de 12:";
-    return_value = factorial(aux_a);
 }
