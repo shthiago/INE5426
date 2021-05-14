@@ -499,7 +499,7 @@ def p_allocexp(p: yacc.YaccProduction):
 
     p[0] = {
         'temp_var': temp_var,
-        'code': p[6]['code'] + f'{temp_var} = new {p[2]["code"]}{p[6]["alloc_brackets"]}',
+        'code': p[6]['code'] + f'{temp_var} = new {p[2]["code"]}{p[6]["alloc_brackets"]}\n',
     }
 
 
