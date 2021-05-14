@@ -100,7 +100,7 @@ def main(filepath: str):
         ident, lineno = str(exp).split(',')
         line = linecache.getline(filepath, int(lineno))
         logger.info('Variable %s used before declare at line %s' %
-                    (ident, line))
+                    (ident, lineno))
         logger.info(line)
         logger.error('Semantic error detected!')
 
