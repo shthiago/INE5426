@@ -15,8 +15,10 @@ def principal()
   int C;
   int D;
   int R;
+  float total;
   C = 4;
   D = 5;
+  total = C + 5;
   R = func1(C, D);
   return;
 }
