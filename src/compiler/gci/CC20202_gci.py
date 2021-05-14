@@ -425,8 +425,10 @@ def p_ifstat(p: yacc.YaccProduction):
     else_start_label = p[8].get('start_label', None)
     cond_false_next_label = else_start_label if else_start_label else next_label
 
+    jump_over_else = f'goto {next_label}\n' if else_start_label is not None else ''
+
     code = p[3]['code'] + f"if False {cond_temp_var} goto {cond_false_next_label}\n" + \
-        p[6]['code'] + p[8]['code'] + next_label + ':\n'
+        p[6]['code'] + jump_over_else + p[8]['code'] + next_label + ':\n'
 
     p[0] = {
         'code': code
